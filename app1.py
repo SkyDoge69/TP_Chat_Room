@@ -16,3 +16,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(_name_)
 auth = init_basic_auth()
 register_error_handlers(app)
+
+@app.route("/", methods=["GET"])
+def main():
+    return render_template("index.html")
+
+
+@app.route("/chat", methods=['GET', 'POST'])
+@auth.login_required
+def chat():
+    return render_template("chat.html", username=auth.username(), rooms = ROOMS)

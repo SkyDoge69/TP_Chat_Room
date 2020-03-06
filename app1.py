@@ -6,10 +6,10 @@ from flask_socketio import SocketIO, send, emit, join_room, leave_room
 import json
 import uuid
 
-from model.user import User
-from errors import register_error_handlers
+from model.user1 import User
+from errors1 import register_error_handlers
 
-from security.basic_authentication import generate_password_hash, init_basic_auth
+from security.basic_authentication1 import generate_password_hash, init_basic_auth
 from werkzeug.security import generate_password_hash, check_password_hash
 
 

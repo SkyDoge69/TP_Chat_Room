@@ -25,7 +25,7 @@ def main():
 @app.route("/chat", methods=['GET', 'POST'])
 @auth.login_required
 def chat():
-    return render_template("chat.html", username=auth.username(), rooms = ROOMS)
+    return render_template("chat.html")
 
 @app.route("/api/users", methods=["POST"])
 def create_user():

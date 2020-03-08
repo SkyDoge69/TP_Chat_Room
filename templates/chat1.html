@@ -2,11 +2,25 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Chat room</title>
+    <title>Page Title</title>
 </head>
 <body>
+    
+    <div id="main-section">
 
-    <h1>Only for vip</h1>
+        <div id="rightside-panel">
+
+            <div id="display-message-section">
+            <div id="input-area">
+                <input type="text" id="user_message" placeholder="Type here">
+                <button type="button" id="send_message">Send</button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+    <script src="{{url_for('static', filename='scripts/socketio1.js')}}"></script>
 
 
 </body>

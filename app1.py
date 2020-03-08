@@ -19,13 +19,13 @@ register_error_handlers(app)
 
 @app.route("/", methods=["GET"])
 def main():
-    return render_template("index.html")
+    return render_template("index1.html")
 
 
 @app.route("/chat", methods=['GET', 'POST'])
 @auth.login_required
 def chat():
-    return render_template("chat.html")
+    return render_template("chat1.html")
 
 @app.route("/api/users", methods=["POST"])
 def create_user():
@@ -66,3 +66,9 @@ def delete_user(user_id):
     user = User.find(user_id)
     user.delete(user_id)
     return ""
+
+@socketio.on('message')
+def message(data):
+    print(f"\n\n{data}\n\n")
+    send({'msg': data['msg'], 'username': data['username'], 'time_stamp': strftime('%b-%d %I:%M%p', localtime())}, room=data['room'])
+    

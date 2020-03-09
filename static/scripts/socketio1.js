@@ -15,4 +15,20 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             printSysMsg(data.msg);
         } 
+
+    function leaveRoom(room) {
+        socket.emit('leave', {'username' : username, 'room': room});
+    }
+
+    function joinRoom(room) {
+        socket.emit('join', {'username': username, 'room': room});
+        //Clear msg area - dont need
+            document.querySelector('#display-message-section').innerHTML = '';
+    }
+
+    function printSysMsg(msg) {
+        const p = document.createElement('p');
+        p.innerHTML = msg;
+        document.querySelector('#display-message-section').append(p);
+    }
 });

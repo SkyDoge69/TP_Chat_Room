@@ -13,7 +13,7 @@ from security.basic_authentication1 import generate_password_hash, init_basic_au
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-app = Flask(_name_)
+app = Flask(__name__)
 auth = init_basic_auth()
 register_error_handlers(app)
 
@@ -86,5 +86,6 @@ def leave(data):
     leave_room(data['room']) 
     send({'msg': data['username'] + " has left the " + data['room'] + " room."}, room=data['room'])
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     socketio.run(app, debug=True)
+    

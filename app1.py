@@ -17,6 +17,10 @@ app = Flask(_name_)
 auth = init_basic_auth()
 register_error_handlers(app)
 
+socketio = SocketIO(app)
+
+ROOMS = ["lounge", "shisha", "games", "coding"]
+
 @app.route("/", methods=["GET"])
 def main():
     return render_template("index1.html")
@@ -72,3 +76,15 @@ def message(data):
     print(f"\n\n{data}\n\n")
     send({'msg': data['msg'], 'username': data['username'], 'time_stamp': strftime('%b-%d %I:%M%p', localtime())}, room=data['room'])
     
+@socketio.on('join')
+def join(data):
+    join_room(data['room'])
+    send({'msg': data['username'] + " has joined the " + data['room'] + " room."}, room=data['room'])
+
+@socketio.on('leave')
+def leave(data):
+    leave_room(data['room']) 
+    send({'msg': data['username'] + " has left the " + data['room'] + " room."}, room=data['room'])
+
+if _name_ == "_main_":
+    socketio.run(app, debug=True)

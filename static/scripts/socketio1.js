@@ -17,7 +17,28 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelector('#display-message-section').append(p);
         } else {
             printSysMsg(data.msg);
-        } 
+        }
+    });
+
+    document.querySelector('#send_message').onclick = () => {
+        socket.send({'msg': document.querySelector('#user_message').value, 
+        'username': username, 'room': room});
+        document.querySelector('#user_message').value = '';
+    }
+    
+    document.querySelectorAll('.select-room').forEach(p => {
+        p.onclick = () => {
+            let newRoom = p.innerHTML;
+            if (newRoom == room) {
+                msg = `You are already in ${room} room.`
+            } else {
+                leaveRoom(room);
+                joinRoom(newRoom);
+                room = newRoom;
+            }
+        }
+
+    });
 
     function leaveRoom(room) {
         socket.emit('leave', {'username' : username, 'room': room});
@@ -25,8 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function joinRoom(room) {
         socket.emit('join', {'username': username, 'room': room});
-        //Clear msg area - dont need
-            document.querySelector('#display-message-section').innerHTML = '';
+        document.querySelector('#display-message-section').innerHTML = '';
     }
 
     function printSysMsg(msg) {
@@ -34,4 +54,5 @@ document.addEventListener('DOMContentLoaded', () => {
         p.innerHTML = msg;
         document.querySelector('#display-message-section').append(p);
     }
-});
+
+})

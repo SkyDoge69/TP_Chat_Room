@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     var socket = io.connect('http://' + document.domain + ':' + location.port);
 
+    let room = "Lounge";
+    joinRoom("Lounge");
+
     socket.on('message', data => {
         const p = document.createElement('p');
         const span_username = document.createElement('span');

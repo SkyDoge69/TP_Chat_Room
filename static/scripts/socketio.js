@@ -3,11 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let room = "Lounge";
     joinRoom("Lounge");
-    // socket.on('connect', () => {
-    //     socket.send("I am connected");
-    // });
-    //Display incoming messages
-    
+
     socket.on('message', data => {
         const p = document.createElement('p');
         const span_username = document.createElement('span');
@@ -25,37 +21,29 @@ document.addEventListener('DOMContentLoaded', () => {
         
     });
 
-
-    // Send message
     document.querySelector('#send_message').onclick = () => {
         socket.send({'msg': document.querySelector('#user_message').value, 
         'username': username, 'room': room});
-        //Clear input area
         document.querySelector('#user_message').value = '';
     }
 
-        // Create room
-        document.querySelector('#create_room').onclick = () => {
-            socket.emit('create_room', {'name': document.querySelector('#room_name').value});
-            //Clear input area
-            document.querySelector('#room_name').value = '';
-        }
-            
-    
-    // Room selection
+   
+    document.querySelector('#create_room').onclick = () => {
+        socket.emit('create_room', {'name': document.querySelector('#room_name').value});
+        document.querySelector('#room_name').value = '';
+    }
+        
     document.querySelectorAll('.select-room').forEach(p => {
         p.onclick = () => {
             let newRoom = p.innerHTML;
             if (newRoom == room) {
                 msg = `You are already in ${room} room.`
-                //later -> printSysMsg(msg);
             } else {
                 leaveRoom(room);
                 joinRoom(newRoom);
                 room = newRoom;
             }
-        }
-        
+        }     
     });
     
     function leaveRoom(room) {
@@ -64,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function joinRoom(room) {
         socket.emit('join', {'username': username, 'room': room});
-        //Clear msg area - dont need
         document.querySelector('#display-message-section').innerHTML = '';
     }
     

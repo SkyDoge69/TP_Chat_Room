@@ -21,7 +21,6 @@ socketio = SocketIO(app)
 
 ROOMS = ["lounge", "shisha", "games", "coding"]
 
-new_room = "sexroom"
 
 @app.route("/", methods=["GET"])
 def main():

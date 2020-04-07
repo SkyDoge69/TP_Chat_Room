@@ -21,6 +21,7 @@ socketio = SocketIO(app)
 
 ROOMS = ["lounge", "shisha", "games", "coding"]
 
+new_room = "sexroom"
 
 @app.route("/", methods=["GET"])
 def main():
@@ -93,7 +94,6 @@ def leave(data):
 def create_room(data):
     print("dasads")
     ROOMS.append(data['name'])
- 
     
 if __name__ == "__main__":
     socketio.run(app, debug=True)  

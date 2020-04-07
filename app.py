@@ -91,7 +91,7 @@ def leave(data):
 
 @socketio.on('create_room')
 def create_room(data):
-    print("dasads")
+    send({'msg': data['username'] + " has created " +  "'" + data['name'] + "' room. Refresh the page."})
     ROOMS.append(data['name'])
     
 if __name__ == "__main__":

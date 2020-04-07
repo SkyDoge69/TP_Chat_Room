@@ -29,7 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
    
     document.querySelector('#create_room').onclick = () => {
-        socket.emit('create_room', {'name': document.querySelector('#room_name').value});
+        socket.emit('create_room', {'name': document.querySelector('#room_name').value,
+        'username': username});
         document.querySelector('#room_name').value = '';
     }
         

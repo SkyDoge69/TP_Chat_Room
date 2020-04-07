@@ -1,7 +1,7 @@
 from time import localtime, strftime
 
 from flask import Flask, request, render_template, jsonify
-from flask_socketio import SocketIO, send, emit, join_room, leave_room
+from flask_socketio import SocketIO, send, emit, join_room, leave_room, close_room
 
 import json
 import uuid
@@ -13,7 +13,6 @@ from security.basic_authentication import generate_password_hash, init_basic_aut
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-#pls work
 app = Flask(__name__)
 auth = init_basic_auth()
 register_error_handlers(app)
@@ -21,6 +20,7 @@ register_error_handlers(app)
 socketio = SocketIO(app)
 
 ROOMS = ["lounge", "shisha", "games", "coding"]
+
 
 @app.route("/", methods=["GET"])
 def main():
@@ -78,7 +78,6 @@ def delete_user(user_id):
 def message(data):
     print(f"\n\n{data}\n\n")
     send({'msg': data['msg'], 'username': data['username'], 'time_stamp': strftime('%b-%d %I:%M%p', localtime())}, room=data['room'])
-    
 
 @socketio.on('join')
 def join(data):
@@ -90,6 +89,11 @@ def leave(data):
     leave_room(data['room']) 
     send({'msg': data['username'] + " has left the " + data['room'] + " room."}, room=data['room'])
 
+@socketio.on('create_room')
+def create_room(data):
+    print("dasads")
+    ROOMS.append(data['name'])
+ 
+    
 if __name__ == "__main__":
     socketio.run(app, debug=True)  
-    

@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         p.onclick = () => {
             let newRoom = p.innerHTML;
             if (newRoom == room) {
-                msg = `You are already in ${room} room.`
+                msg = You are already in ${room} room.
             } else {
                 leaveRoom(room);
                 joinRoom(newRoom);

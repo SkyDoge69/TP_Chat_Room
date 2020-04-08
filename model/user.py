@@ -4,11 +4,12 @@ from errors import ApplicationError
 
 class User(object):
 
-    def __init__(self, name, password, user_id=None):
+    def __init__(self, name, password, room="Lounge", user_id=None):
         self.id = user_id
         self.name = name
         self.password = password
-      
+        self.room = room
+
       
     def to_dict(self):
         user_data = self.__dict__
@@ -35,7 +36,7 @@ class User(object):
         result = None
         with SQLite() as db:
             result = db.execute(
-                    "SELECT name, password, id FROM user WHERE id = ?",
+                    "SELECT name, password, room, id FROM user WHERE id = ?",
                     (user_id,))
         user = result.fetchone()
         if user is None:
@@ -48,7 +49,7 @@ class User(object):
         result = None
         with SQLite() as db:
             result = db.execute(
-                    "SELECT name, password, id FROM user WHERE name = ?",
+                    "SELECT name, password, room, id FROM user WHERE name = ?",
                     (name,))
         user = result.fetchone()
         if user is None:
@@ -60,17 +61,17 @@ class User(object):
     def all():
         with SQLite() as db:
             result = db.execute(
-                    "SELECT name, password, id FROM user").fetchall()
+                    "SELECT name, password, room, id FROM user").fetchall()
             return [User(*row) for row in result]
 
     def __get_save_query(self):
         query = "{} INTO user {} VALUES {}"
         if self.id == None:
-            args = (self.name, self.password)
-            query = query.format("INSERT", "(name, password)", args)
+            args = (self.name, self.password, self.room)
+            query = query.format("INSERT", "(name, password, room)", args)
         else:
-            args = (self.id, self.name, self.password)
-            query = query.format("REPLACE", "(id, name, password)", args)
+            args = (self.id, self.name, self.password, self.room)
+            query = query.format("REPLACE", "(id, name, password, room)", args)
         return query
 
 

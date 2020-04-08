@@ -8,6 +8,7 @@ import uuid
 
 from model.user import User
 from errors import register_error_handlers
+from errors import ApplicationError
 
 from security.basic_authentication import generate_password_hash, init_basic_auth
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -96,15 +97,18 @@ def create_room(data):
 
 @socketio.on('close_room')
 def close_room(data):
+    send({'msg': data['username'] + " has deleted " +  "'" + data['name'] + "' room. Refresh page."})
     ROOMS.remove(data['name'])
-    send({'msg': data['username'] + " has deleted " +  "'" + data['name'] + "' room."})
     # close_room(data['name'], namespace=None)
     
-@socketio.on('close_room')
-def close_room(data):
-    ROOMS.remove(data['name'])
-    send({'msg': data['username'] + " has deleted " +  "'" + data['name'] + "' room. Refresh page"})
-    # close_room(data['name'], namespace=None)
+@socketio.on('invite_user')
+def invite_user(data):
+    if data['invited_user'] == data['username']:
+        raise ApplicationError("Can't invite yourself", 404)
+    else:
+        invited_user = User.find_by_name(data['invited_user'])
+        send({'msg': data['username'] + " has invited "  + data['invited_user'] + " in " + data['room'] + '.'})
+
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)  

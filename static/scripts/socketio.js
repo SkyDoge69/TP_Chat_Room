@@ -33,12 +33,18 @@ document.addEventListener('DOMContentLoaded', () => {
         'username': username});
         document.querySelector('#room_name').value = '';
     }
+
+    document.querySelector('#delete_room').onclick = () => {
+        socket.emit('close_room', {'name': document.querySelector('#room_name').value,
+        'username': username});
+        document.querySelector('#room_name').value = '';
+    }
         
     document.querySelectorAll('.select-room').forEach(p => {
         p.onclick = () => {
             let newRoom = p.innerHTML;
             if (newRoom == room) {
-                msg = `You are already in ${room} room.`
+                msg = You are already in ${room} room.
             } else {
                 leaveRoom(room);
                 joinRoom(newRoom);

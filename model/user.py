@@ -4,7 +4,7 @@ from errors import ApplicationError
 
 class User(object):
 
-    def __init__(self, name, password, room="Lounge", user_id=None):
+    def __init__(self, name, password, room, user_id=None):
         self.id = user_id
         self.name = name
         self.password = password

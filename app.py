@@ -40,7 +40,7 @@ def create_user():
     if user_data == None:
         return "Bad request", 401
     hashed_password = generate_password_hash(user_data["password"])
-    user = User(user_data["name"], hashed_password)
+    user = User(user_data["name"], hashed_password, user_data['room'])
     user.save()
     return jsonify(user.to_dict()), 201
 
@@ -84,6 +84,7 @@ def message(data):
 def join(data):
     join_room(data['room'])
     send({'msg': data['username'] + " has joined the " + data['room'] + " room."}, room=data['room'])
+    User.find_by_name(data['username']).room = data['room']
 
 @socketio.on('leave')
 def leave(data):
@@ -106,8 +107,8 @@ def invite_user(data):
     if data['invited_user'] == data['username']:
         raise ApplicationError("Can't invite yourself", 404)
     else:
-        invited_user = User.find_by_name(data['invited_user'])
-        send({'msg': data['username'] + " has invited "  + data['invited_user'] + " in " + data['room'] + '.'})
+        #change data[invited user] to "you" down below
+        send({'msg': data['username'] + " has invited "  + data['invited_user'] + " in " + data['room'] + '.'}, room=User.find_by_name(data['invited_user']).room)
 
 
 if __name__ == "__main__":

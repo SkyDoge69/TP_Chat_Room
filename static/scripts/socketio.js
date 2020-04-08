@@ -33,6 +33,12 @@ document.addEventListener('DOMContentLoaded', () => {
         'username': username});
         document.querySelector('#room_name').value = '';
     }
+
+    document.querySelector('#delete_room').onclick = () => {
+        socket.emit('close_room', {'name': document.querySelector('#room_name').value,
+        'username': username});
+        document.querySelector('#room_name').value = '';
+    }
         
     document.querySelectorAll('.select-room').forEach(p => {
         p.onclick = () => {

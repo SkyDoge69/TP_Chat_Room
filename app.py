@@ -91,8 +91,14 @@ def leave(data):
 
 @socketio.on('create_room')
 def create_room(data):
-    send({'msg': data['username'] + " has created " +  "'" + data['name'] + "' room. Refresh the page."})
+    send({'msg': data['username'] + " has created " +  "'" + data['name'] + "' room. Refresh page."})
     ROOMS.append(data['name'])
+
+@socketio.on('close_room')
+def close_room(data):
+    ROOMS.remove(data['name'])
+    send({'msg': data['username'] + " has deleted " +  "'" + data['name'] + "' room."})
+    # close_room(data['name'], namespace=None)
     
 if __name__ == "__main__":
     socketio.run(app, debug=True)  

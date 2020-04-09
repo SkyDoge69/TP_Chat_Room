@@ -95,23 +95,24 @@ def leave(data):
  
 @socketio.on('create_room')
 def create_room(data):
-    send({'msg': data['username'] + " has created " +  "'" + data['name'] + "' room. Refresh page."})
+    send({'msg': data['username'] + " has created the " +  data['name'] + " room. Refresh page."})
     ROOMS.append(data['name'])
  
 @socketio.on('close_room')
 def close_room(data):
-    send({'msg': data['username'] + " has deleted " +  "'" + data['name'] + "' room. Refresh page."})
+    send({'msg': data['username'] + " has deleted the " + data['name'] + " room. Refresh page."})
     ROOMS.remove(data['name'])
-    # close_room(data['name'], namespace=None)
    
 @socketio.on('invite_user')
 def invite_user(data):
     if data['invited_user'] == data['username']:
         raise ApplicationError("Can't invite yourself", 404)
     else:
-        #change data[invited user] to "you" down below
-        send({'msg': data['username'] + " has invited "  + data['invited_user'] + " in " + data['room'] + '.'}, room=User.find_by_name(data['invited_user']).room)
-        print(User.find_by_name(data['username'].room))
+        send({'msg': "Invite sent!"})
+        for user in User.all():
+            if user.name == data['invited_user']:
+                genaka = user.room
+        send({'msg': data['username'] + " has invited you in the " + data['room'] + " room."}, room=genaka)
  
 if __name__ == "__main__":
     socketio.run(app, debug=True)

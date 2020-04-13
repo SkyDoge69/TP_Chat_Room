@@ -11,10 +11,22 @@ CREATE TABLE IF NOT EXISTS user
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL UNIQUE,
         password TEXT NOT NULL,
-        room TEXT NOT NULL
+        room TEXT NOT NULL,
+        FOREIGN KEY(room) REFERENCES rooms(name)
     )
 ''')
 conn.commit()
+
+conn.cursor().execute('''
+CREATE TABLE IF NOT EXISTS rooms
+    (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        is_private INTEGER,
+        name TEXT NOT NULL
+    )
+''')
+conn.commit()
+
 
 #conn.cursor().execute('''
 #CREATE TABLE IF NOT EXISTS ad

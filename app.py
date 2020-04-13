@@ -7,6 +7,7 @@ import json
 import uuid
  
 from model.user import User
+from model.rooms import Room
 from errors import register_error_handlers
 from errors import ApplicationError
  
@@ -19,9 +20,12 @@ auth = init_basic_auth()
 register_error_handlers(app)
  
 socketio = SocketIO(app)
- 
-ROOMS = ["lounge", "shisha", "games", "coding"]
+
+
+ROOMS = [Room.find_by_name("lounge").name, Room.find_by_name("shisha").name, Room.find_by_name("games").name, Room.find_by_name("coding").name]
+
 PRIVATE_ROOMS = []
+
  
 @app.route("/", methods=["GET"])
 def main():
@@ -33,7 +37,24 @@ def main():
 def chat():
     return render_template("chat.html", username=auth.username(), rooms = ROOMS, private_rooms = PRIVATE_ROOMS)
  
+
+@app.route("/api/rooms", methods=["POST"])
+def create_room():
+    room_data = request.get_json(force=True, silent=True)
+    if room_data == None:
+        return "Bad request", 401
+    room = Room(room_data["is_private"], room_data['name'])
+    room.save()
+    return jsonify(room.to_dict()), 201
+
+@app.route("/api/rooms", methods=["GET"])
+def list_rooms():
+    result = {"result": []}
+    for room in Room.all():
+        result["result"].append(room.to_dict())
+    return jsonify(result), 201
  
+
 @app.route("/api/users", methods=["POST"])
 def create_user():
     user_data = request.get_json(force=True, silent=True)
@@ -97,11 +118,13 @@ def leave(data):
 def create_room(data):
     send({'msg': data['username'] + " has created the " +  data['name'] + " room. Refresh page."})
     ROOMS.append(data['name'])
+    Room.add_room(0, data['name'])
 
 @socketio.on('create_private_room')
 def create_private_room(data):    
     send({'msg': data['username'] + " has created 'private' " +  data['name'] + " room. Refresh page."})
     PRIVATE_ROOMS.append(data['name'])
+    Room.add_room(1, data['name'])
 
 @socketio.on('close_room')
 def close_room(data):
@@ -110,9 +133,11 @@ def close_room(data):
     else:
         if data['name'] in ROOMS:
             ROOMS.remove(data['name'])
+            Room.delete_room(data['name'])
         elif data['name'] in PRIVATE_ROOMS:
             PRIVATE_ROOMS.remove(data['name'])
-        
+            Room.delete_room(data['name'])
+          
         send({'msg': data['username'] + " has deleted the " + data['name'] + " room. Refresh page."})
     
 @socketio.on('invite_user')

@@ -10,7 +10,6 @@ class User(object):
         self.password = password
         self.room = room
  
-     
     def to_dict(self):
         user_data = self.__dict__
         del user_data["password"]

@@ -21,7 +21,7 @@ register_error_handlers(app)
 socketio = SocketIO(app)
  
 ROOMS = ["lounge", "shisha", "games", "coding"]
- 
+PRIVATE_ROOMS = []
  
 @app.route("/", methods=["GET"])
 def main():
@@ -31,7 +31,7 @@ def main():
 @app.route("/chat", methods=['GET', 'POST'])
 @auth.login_required
 def chat():
-    return render_template("chat.html", username=auth.username(), rooms = ROOMS)
+    return render_template("chat.html", username=auth.username(), rooms = ROOMS, private_rooms = PRIVATE_ROOMS)
  
  
 @app.route("/api/users", methods=["POST"])
@@ -97,12 +97,24 @@ def leave(data):
 def create_room(data):
     send({'msg': data['username'] + " has created the " +  data['name'] + " room. Refresh page."})
     ROOMS.append(data['name'])
- 
+
+@socketio.on('create_private_room')
+def create_private_room(data):    
+    send({'msg': data['username'] + " has created 'private' " +  data['name'] + " room. Refresh page."})
+    PRIVATE_ROOMS.append(data['name'])
+
 @socketio.on('close_room')
 def close_room(data):
-    send({'msg': data['username'] + " has deleted the " + data['name'] + " room. Refresh page."})
-    ROOMS.remove(data['name'])
-   
+    if data['name'] == 'lounge' or data['name'] == 'shisha' or data['name'] == 'games' or data['name'] == 'coding':
+        send({'msg': "Cannot delete static rooms!"}, room=data['room'])
+    else:
+        if data['name'] in ROOMS:
+            ROOMS.remove(data['name'])
+        elif data['name'] in PRIVATE_ROOMS:
+            PRIVATE_ROOMS.remove(data['name'])
+        
+        send({'msg': data['username'] + " has deleted the " + data['name'] + " room. Refresh page."})
+    
 @socketio.on('invite_user')
 def invite_user(data):
     if data['invited_user'] == data['username']:

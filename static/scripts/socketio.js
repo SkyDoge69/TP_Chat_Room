@@ -35,10 +35,17 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#room_name').value = '';
     }
 
+    document.querySelector('#create_private_room').onclick = () => {
+        socket.emit('create_private_room', {'name': document.querySelector('#room_name').value,
+        'username': username});
+        document.querySelector('#room_name').value = '';
+    }
+
+
     //delete
     document.querySelector('#delete_room').onclick = () => {
         socket.emit('close_room', {'name': document.querySelector('#room_name').value,
-        'username': username});
+        'username': username, 'room': room});
         document.querySelector('#room_name').value = '';
     }
     

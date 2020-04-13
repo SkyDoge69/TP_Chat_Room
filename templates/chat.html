@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Page Title</title>
+
 </head>
 <body>
     <nav>
@@ -12,6 +13,7 @@
         <div id="room-edit">
             <input type="text" id="room_name" placeholder="Room name">
             <button id="create_room" type="button">Create room</button>
+            <button id="create_private_room" type="button">Create private room</button>
             <button id="delete_room" type="button">Delete room</button>
         </div>
 
@@ -22,10 +24,16 @@
         </div>
 
         </nav>
+        <div id="all_rooms">
             <h4>ROOMS</h4>
             {% for room in rooms %}
                 <p class="select-room">{{ room|title }}</p>
             {% endfor %}
+            <h4>PRIVATE ROOMS</h4>
+            {% for private_room in private_rooms %}
+                <p class="select-room">{{ private_room|title }}</p>
+            {% endfor %}
+        </div>
         <nav id="sidebar">
 
         <div id="rightside-panel">

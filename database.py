@@ -27,6 +27,19 @@ CREATE TABLE IF NOT EXISTS rooms
 ''')
 conn.commit()
 
+conn.cursor().execute('''
+CREATE TABLE IF NOT EXISTS invites
+    (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        room_name TEXT NOT NULL,
+        username TEXT NOT NULL
+    )
+''')
+conn.commit()
+
+# SELECT * FROM ime WHERE room_id = ? and username = ?", (id, name)
+# SELECT * FROM ime WHERE room_id = ?, 
+
 
 #conn.cursor().execute('''
 #CREATE TABLE IF NOT EXISTS ad

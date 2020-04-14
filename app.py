@@ -8,6 +8,7 @@ import uuid
  
 from model.user import User
 from model.rooms import Room
+from model.invites import Invite
 from errors import register_error_handlers
 from errors import ApplicationError
  
@@ -25,7 +26,7 @@ ROOMS = [Room.find_by_name("lounge").name, Room.find_by_name("shisha").name, Roo
 
 PRIVATE_ROOMS = []
 
- 
+
 @app.route("/", methods=["GET"])
 def main():
     return render_template("index.html")
@@ -46,13 +47,30 @@ def create_room():
     room.save()
     return jsonify(room.to_dict()), 201
 
+
 @app.route("/api/rooms", methods=["GET"])
 def list_rooms():
     result = {"result": []}
     for room in Room.all():
         result["result"].append(room.to_dict())
     return jsonify(result), 201
- 
+
+@app.route("/api/invites", methods=["POST"])
+def create_invite():
+    invite_data = request.get_json(force=True, silent=True)
+    if invite_data == None:
+        return "Bad request", 401
+    invite = Invite(invite_data["room_id"], invite_data["username"])
+    invite.save()
+    return jsonify(invite.to_dict()), 201
+
+@app.route("/api/invites", methods=["GET"])
+def list_invites():
+    result = {"result": []}
+    for invite in Invite.all():
+        result["result"].append(invite.to_dict())
+    return jsonify(result), 201
+
 
 @app.route("/api/users", methods=["POST"])
 def create_user():
@@ -107,7 +125,9 @@ def join(data):
     for user in User.all():
         if user.name == data['username']:
             user.update_room(data['room'], data['username'])
- 
+    
+            
+
 @socketio.on('leave')
 def leave(data):
     leave_room(data['room'])
@@ -122,6 +142,7 @@ def create_room(data):
 @socketio.on('create_private_room')
 def create_private_room(data):    
     send({'msg': data['username'] + " has created 'private' " +  data['name'] + " room. Refresh page."})
+    Invite.add_invite(data['name'], data['username'])
     PRIVATE_ROOMS.append(data['name'])
     Room.add_room(1, data['name'])
 
@@ -148,8 +169,9 @@ def invite_user(data):
         check = False
         for user in User.all():
             if user.name == data['invited_user']:
-                send({'msg': "Invite sent!"})
+                Invite.add_invite(data['room'], data['invited_user'])
                 genaka = user.room
+                send({'msg': "Invite sent!"})
                 send({'msg': data['username'] + " has invited you in the " + data['room'] + " room."}, room=genaka)
                 check = True
         if not check:

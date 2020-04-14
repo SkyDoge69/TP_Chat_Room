@@ -38,10 +38,10 @@ class Room(object):
                     "INSERT INTO rooms(is_private, name) VALUES (?, ?)",
                     (is_private, name))
             room = result.fetchone()
-        if room is None:
-            raise ApplicationError(
-                    "Room with name {} not found".format(name), 404)
-        return Room(*room)
+        # if room is None:
+        #     raise ApplicationError(
+        #             "Room with name {} not found".format(name), 404)
+        # return Room(*room)
         
     @staticmethod
     def delete_room(name):
@@ -50,10 +50,10 @@ class Room(object):
                     "DELETE FROM rooms WHERE name = ?",
                     (name,))
             room = result.fetchone()
-        if room is None:
-            raise ApplicationError(
-                    "Room with name {} not found".format(name), 404)
-        return Room(*room)
+        # if room is None:
+        #     raise ApplicationError(
+        #             "Room with name {} not found".format(name), 404)
+        # return Room(*room)
 
     @staticmethod
     def all():
@@ -68,6 +68,6 @@ class Room(object):
             args = (self.is_private, self.name)
             query = query.format("INSERT", "(is_private, name)", args)
         else:
-            args = (self.room_id, self.is_private, self.name)
+            args = (self.id, self.is_private, self.name)
             query = query.format("REPLACE", "(id, is_private, name)", args)
         return query

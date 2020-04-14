@@ -21,7 +21,6 @@ register_error_handlers(app)
  
 socketio = SocketIO(app)
 
-
 ROOMS = [Room.find_by_name("lounge").name, Room.find_by_name("shisha").name, Room.find_by_name("games").name, Room.find_by_name("coding").name]
 
 PRIVATE_ROOMS = []
@@ -143,13 +142,19 @@ def close_room(data):
 @socketio.on('invite_user')
 def invite_user(data):
     if data['invited_user'] == data['username']:
+        send({'msg': "Cannot invite yourself!"})
         raise ApplicationError("Can't invite yourself", 404)
     else:
-        send({'msg': "Invite sent!"})
+        check = False
         for user in User.all():
             if user.name == data['invited_user']:
+                send({'msg': "Invite sent!"})
                 genaka = user.room
-        send({'msg': data['username'] + " has invited you in the " + data['room'] + " room."}, room=genaka)
- 
+                send({'msg': data['username'] + " has invited you in the " + data['room'] + " room."}, room=genaka)
+                check = True
+        if not check:
+            send({'msg': "User does not exist!"})
+            raise ApplicationError("User doesn't exist", 404)
+
 if __name__ == "__main__":
     socketio.run(app, debug=True)

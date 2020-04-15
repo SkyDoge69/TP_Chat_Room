@@ -42,6 +42,19 @@ class Room(object):
         #     raise ApplicationError(
         #             "Room with name {} not found".format(name), 404)
         # return Room(*room)
+
+    @staticmethod
+    def pivate_check(name):
+        with SQLite() as db:
+            result = db.execute(
+                    "SELECT is_private FROM rooms WHERE name = ?",
+                    (name,))
+            room = result.fetchone()
+        return 1 in room
+        # if room is None:
+        #     raise ApplicationError(
+        #             "Room with name {} not found".format(name), 404)
+        # return Room(*room)
         
     @staticmethod
     def delete_room(name):

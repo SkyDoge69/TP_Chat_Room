@@ -53,9 +53,10 @@ class Invite(object):
                     "SELECT * FROM invites WHERE room_name = ? AND username = ?",
                     (room_name, username))
         invite = result.fetchone()
-        if invite is not None:
-            return True
-        return False
+        if invite is None:
+            return False
+        return True
+    
 
     @staticmethod
     def all():

@@ -120,13 +120,21 @@ def message(data):
  
 @socketio.on('join')
 def join(data):
-    join_room(data['room'])
-    send({'msg': data['username'] + " has joined the " + data['room'] + " room."}, room=data['room'])
-    for user in User.all():
-        if user.name == data['username']:
-            user.update_room(data['room'], data['username'])
-    
-            
+    if Room.pivate_check(data['room']):
+        if Invite.check_for_invite(data['room'], data['username']):
+            join_room(data['room'])
+            send({'msg': data['username'] + " has joined the " + data['room'] + " room."}, room=data['room'])
+            for user in User.all():
+                if user.name == data['username']:
+                    user.update_room(data['room'], data['username'])
+        elif not Invite.check_for_invite(data['room'], data['username']):
+            send({'msg': "You are not invited haha bitchman whore hoe"})
+    else:
+        join_room(data['room'])
+        send({'msg': data['username'] + " has joined the " + data['room'] + " room."}, room=data['room'])
+        for user in User.all():
+            if user.name == data['username']:
+                user.update_room(data['room'], data['username'])
 
 @socketio.on('leave')
 def leave(data):
@@ -177,6 +185,7 @@ def invite_user(data):
         if not check:
             send({'msg': "User does not exist!"})
             raise ApplicationError("User doesn't exist", 404)
+
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)

@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     var socket = io.connect('http://' + document.domain + ':' + location.port);
 
-    let room = "lounge";
-    joinRoom("lounge");
+    let room = "Lounge";
+    joinRoom("Lounge");
 
     socket.on('message', data => {
         const p = document.createElement('p');
@@ -23,9 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     //send
     document.querySelector('#send_message').onclick = () => {
-        socket.send({'msg': document.querySelector('#user_message').value, 
-        'username': username, 'room': room});
-        document.querySelector('#user_message').value = '';
+        if (document.querySelector('#user_message').value != "") { 
+            socket.send({'msg': document.querySelector('#user_message').value, 
+            'username': username, 'room': room});
+            document.querySelector('#user_message').value = '';
+        }
     }
 
     //create

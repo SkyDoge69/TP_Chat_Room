@@ -22,7 +22,7 @@ register_error_handlers(app)
  
 socketio = SocketIO(app)
 
-ROOMS = [Room.find_by_name("lounge").name, Room.find_by_name("shisha").name, Room.find_by_name("games").name, Room.find_by_name("coding").name]
+ROOMS = [Room.find_by_name("Lounge").name, Room.find_by_name("Shisha").name, Room.find_by_name("Games").name, Room.find_by_name("Coding").name]
 
 PRIVATE_ROOMS = []
 
@@ -117,7 +117,8 @@ def delete_user(user_id):
 def message(data):
     print(f"\n\n{data}\n\n")
     send({'msg': data['msg'], 'username': data['username'], 'time_stamp': strftime('%b-%d %I:%M%p', localtime())}, room=data['room'])
- 
+
+
 @socketio.on('join')
 def join(data):
     if Room.pivate_check(data['room']):
@@ -127,8 +128,13 @@ def join(data):
             for user in User.all():
                 if user.name == data['username']:
                     user.update_room(data['room'], data['username'])
-        elif not Invite.check_for_invite(data['room'], data['username']):
-            send({'msg': "You are not invited haha bitchman whore hoe"})
+        # elif not Invite.check_for_invite(data['room'], data['username']):
+        else:
+            join_room("Lounge")
+            send({'msg': "You are not invited, choose another room."})
+            for user in User.all():
+                if user.name == data['username']:
+                    user.update_room(data['room'], data['username'])
     else:
         join_room(data['room'])
         send({'msg': data['username'] + " has joined the " + data['room'] + " room."}, room=data['room'])
@@ -144,6 +150,7 @@ def leave(data):
 @socketio.on('create_room')
 def create_room(data):
     send({'msg': data['username'] + " has created the " +  data['name'] + " room. Refresh page."})
+    Invite.add_invite(data['name'], data['username'])
     ROOMS.append(data['name'])
     Room.add_room(0, data['name'])
 
@@ -156,17 +163,21 @@ def create_private_room(data):
 
 @socketio.on('close_room')
 def close_room(data):
-    if data['name'] == 'lounge' or data['name'] == 'shisha' or data['name'] == 'games' or data['name'] == 'coding':
+    if data['name'] == "Lounge" or data['name'] == "Shisha" or data['name'] == "Games" or data['name'] == "Coding":
         send({'msg': "Cannot delete static rooms!"}, room=data['room'])
     else:
-        if data['name'] in ROOMS:
+        if data['name'] in ROOMS and Invite.check_for_invite(data['name'], data['username']):
             ROOMS.remove(data['name'])
             Room.delete_room(data['name'])
-        elif data['name'] in PRIVATE_ROOMS:
+            Invite.delete_invite(data['name'])
+            send({'msg': data['username'] + " has deleted the " + data['name'] + " room. Refresh page."})
+        elif data['name'] in PRIVATE_ROOMS and Invite.check_for_invite(data['name'], data['username']):
             PRIVATE_ROOMS.remove(data['name'])
             Room.delete_room(data['name'])
-          
-        send({'msg': data['username'] + " has deleted the " + data['name'] + " room. Refresh page."})
+            Invite.delete_invite(data['name'])
+            send({'msg': data['username'] + " has deleted the " + data['name'] + " room. Refresh page."})
+        else:
+            send({'msg': "Cannot delete this room"})
     
 @socketio.on('invite_user')
 def invite_user(data):

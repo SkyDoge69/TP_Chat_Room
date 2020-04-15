@@ -19,7 +19,6 @@ class Invite(object):
         return self
 
 
-
     @staticmethod
     def find_by_room(room_name):
         result = None
@@ -57,6 +56,13 @@ class Invite(object):
             return False
         return True
     
+    @staticmethod
+    def delete_invite(room_name):
+        with SQLite() as db:
+            result = db.execute(
+                    "DELETE FROM invites WHERE room_name = ?",
+                    (room_name,))
+            room = result.fetchall()
 
     @staticmethod
     def all():

@@ -50,7 +50,7 @@ class Room(object):
                     "SELECT is_private FROM rooms WHERE name = ?",
                     (name,))
             room = result.fetchone()
-        return 1 in room
+        return room[0]
         # if room is None:
         #     raise ApplicationError(
         #             "Room with name {} not found".format(name), 404)
@@ -67,6 +67,20 @@ class Room(object):
         #     raise ApplicationError(
         #             "Room with name {} not found".format(name), 404)
         # return Room(*room)
+
+    @staticmethod
+    def all_neznam():
+        with SQLite() as db:
+            result = db.execute(
+                    "SELECT name FROM rooms WHERE is_private = 0").fetchall()                    
+            return [''.join(name) for name in result]
+
+    @staticmethod
+    def all_private():
+        with SQLite() as db:
+            result = db.execute(
+                    "SELECT name FROM rooms WHERE is_private = 1").fetchall()                    
+            return [''.join(name) for name in result]
 
     @staticmethod
     def all():

@@ -22,10 +22,6 @@ register_error_handlers(app)
  
 socketio = SocketIO(app)
 
-ROOMS = [Room.find_by_name("Lounge").name, Room.find_by_name("Shisha").name, Room.find_by_name("Games").name, Room.find_by_name("Coding").name]
-
-PRIVATE_ROOMS = []
-
 
 @app.route("/", methods=["GET"])
 def main():
@@ -35,7 +31,7 @@ def main():
 @app.route("/chat", methods=['GET', 'POST'])
 @auth.login_required
 def chat():
-    return render_template("chat.html", username=auth.username(), rooms = ROOMS, private_rooms = PRIVATE_ROOMS)
+    return render_template("chat.html", username=auth.username(), rooms = Room.all_neznam(), private_rooms = Room.all_private())
  
 
 @app.route("/api/rooms", methods=["POST"])
@@ -121,7 +117,7 @@ def message(data):
 
 @socketio.on('join')
 def join(data):
-    if Room.pivate_check(data['room']):
+    if Room.pivate_check(data['room']) == 1:
         if Invite.check_for_invite(data['room'], data['username']):
             join_room(data['room'])
             send({'msg': data['username'] + " has joined the " + data['room'] + " room."}, room=data['room'])
@@ -149,22 +145,16 @@ def leave(data):
  
 @socketio.on('create_room')
 def create_room(data):
-    for current_room in PRIVATE_ROOMS:  
-        send({'msg': data['username'] + " has created " +  data['name'] + " room. Refresh page."}, room=current_room)
-    for current_room in ROOMS:  
+    for current_room in Room.all_neznam():  
         send({'msg': data['username'] + " has created " +  data['name'] + " room. Refresh page."}, room=current_room)
     Invite.add_invite(data['name'], data['username'])
-    ROOMS.append(data['name'])
     Room.add_room(0, data['name'])
 
 @socketio.on('create_private_room')
 def create_private_room(data): 
-    for current_room in PRIVATE_ROOMS:  
-        send({'msg': data['username'] + " has created 'private' " +  data['name'] + " room. Refresh page."}, room=current_room)
-    for current_room in ROOMS:  
+    for current_room in Room.all_private():  
         send({'msg': data['username'] + " has created 'private' " +  data['name'] + " room. Refresh page."}, room=current_room)
     Invite.add_invite(data['name'], data['username'])
-    PRIVATE_ROOMS.append(data['name'])
     Room.add_room(1, data['name'])
 
 @socketio.on('close_room')
@@ -172,25 +162,20 @@ def close_room(data):
     if data['name'] == "Lounge" or data['name'] == "Shisha" or data['name'] == "Games" or data['name'] == "Coding":
         send({'msg': "Cannot delete static rooms!"}, room=data['room'])
     else:
-        if data['name'] in ROOMS and Invite.check_for_invite(data['name'], data['username']):
-            for current_room in PRIVATE_ROOMS:  
+        if data['name'] in Room.all_neznam() and Invite.check_for_invite(data['name'], data['username']):
+            for current_room in Room.all_neznam():  
                 send({'msg': data['username'] + " has deleted " +  data['name'] + " room. Refresh page."}, room=current_room)
-            for current_room in ROOMS:  
-                send({'msg': data['username'] + " has deleted " +  data['name'] + " room. Refresh page."}, room=current_room)
-            ROOMS.remove(data['name'])
             Room.delete_room(data['name'])
             Invite.delete_invite(data['name'])
-        elif data['name'] in PRIVATE_ROOMS and Invite.check_for_invite(data['name'], data['username']):
-            for current_room in PRIVATE_ROOMS:  
+        elif data['name'] in Room.all_private() and Invite.check_for_invite(data['name'], data['username']):
+            for current_room in Room.all_neznam():  
                 send({'msg': data['username'] + " has deleted " +  data['name'] + " room. Refresh page."}, room=current_room)
-            for current_room in ROOMS:  
-                send({'msg': data['username'] + " has deleted " +  data['name'] + " room. Refresh page."}, room=current_room)
-            PRIVATE_ROOMS.remove(data['name'])
             Room.delete_room(data['name'])
             Invite.delete_invite(data['name'])
         else:
             send({'msg': "Cannot delete this room"})
-    
+
+
 @socketio.on('invite_user')
 def invite_user(data):
     if data['invited_user'] == data['username']:

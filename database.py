@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS user
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL UNIQUE,
         password TEXT NOT NULL,
-        room TEXT NOT NULL,
+        room STRING,
         FOREIGN KEY(room) REFERENCES rooms(name)
     )
 ''')
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS rooms
     (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         is_private INTEGER,
-        name TEXT NOT NULL
+        name STRING
     )
 ''')
 conn.commit()
@@ -31,8 +31,8 @@ conn.cursor().execute('''
 CREATE TABLE IF NOT EXISTS invites
     (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        room_name TEXT NOT NULL,
-        username TEXT NOT NULL
+        room_name STRING,
+        username STRING
     )
 ''')
 conn.commit()

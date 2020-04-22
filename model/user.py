@@ -1,8 +1,8 @@
 from database import SQLite
 from errors import ApplicationError
- 
- 
-class User(object):
+from flask_login import UserMixin
+
+class User(UserMixin):
  
     def __init__(self, name, password, room, user_id=None):
         self.id = user_id
@@ -11,6 +11,10 @@ class User(object):
         self.room = room
  
     def to_dict(self):
+        user_data = self.__dict__
+        return user_data
+
+    def to_viewable(self):
         user_data = self.__dict__
         del user_data["password"]
         return user_data
@@ -66,6 +70,17 @@ class User(object):
         if result.rowcount == 0:
             raise ApplicationError("No user present", 404)
  
+    @staticmethod
+    def find_user_password(username, password):
+        result = None
+        with SQLite() as db:
+            result = db.execute("SELECT * FROM user WHERE name = ? and password = ?",
+                    (username, password))
+            check = result.fetchone()
+            if check is None:
+                return False
+            else:
+                return True
  
     @staticmethod
     def all():

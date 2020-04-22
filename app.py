@@ -1,6 +1,7 @@
 from time import localtime, strftime
  
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, redirect, url_for, flash
+from flask_login import LoginManager, login_user, current_user, logout_user
 from flask_socketio import SocketIO, send, emit, join_room, leave_room, close_room
  
 import json
@@ -15,23 +16,38 @@ from errors import ApplicationError
 from security.basic_authentication import generate_password_hash, init_basic_auth
 from werkzeug.security import generate_password_hash, check_password_hash
  
+from wtform_fields import *
  
 app = Flask(__name__)
+
 auth = init_basic_auth()
+app.secret_key = 'takamekefinenemekefibratnqkude33trqqima'
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.find(user_id)
+
 register_error_handlers(app)
  
 socketio = SocketIO(app)
 
 
-@app.route("/", methods=["GET"])
+@app.route("/", methods=["GET", "POST"])
 def main():
-    return render_template("index.html")
- 
+    login_form = LoginForm()
+    if login_form.validate_on_submit():
+        user_object = User.find_by_name(login_form.username.data)
+        login_user(user_object)
+        return redirect(url_for('chat'))
+    return render_template("index.html", form=login_form)
  
 @app.route("/chat", methods=['GET', 'POST'])
-@auth.login_required
+#@auth.login_required
 def chat():
-    return render_template("chat.html", username=auth.username(), rooms = Room.all_neznam(), private_rooms = Room.all_private())
+    return render_template("chat.html", username=current_user.name, rooms = Room.all_neznam(), private_rooms = Room.all_private())
  
 
 @app.route("/api/rooms", methods=["POST"])
@@ -73,8 +89,8 @@ def create_user():
     user_data = request.get_json(force=True, silent=True)
     if user_data == None:
         return "Bad request", 401
-    hashed_password = generate_password_hash(user_data["password"])
-    user = User(user_data["name"], hashed_password, user_data['room'])
+    #hashed_password = generate_password_hash(user_data["password"])
+    user = User(user_data['name'], user_data['password'], user_data['room'])
     user.save()
     return jsonify(user.to_dict()), 201
  
@@ -88,7 +104,7 @@ def get_user(user_id):
 def list_users():
     result = {"result": []}
     for user in User.all():
-        result["result"].append(user.to_dict())
+        result["result"].append(user.to_viewable())
     return jsonify(result), 201
  
  

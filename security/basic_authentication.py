@@ -7,7 +7,6 @@ from errors import ApplicationError
 def get_password_hash(password):
     return generate_password_hash(password)
 
-
 def __verify_password(name, password):
     user = None
     try:

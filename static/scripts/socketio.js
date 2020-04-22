@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let room = "Lounge";
     joinRoom("Lounge");
+    //maybe leter heterosexualen tp
 
     socket.on('message', data => {
         const p = document.createElement('p');

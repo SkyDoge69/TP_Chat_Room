@@ -44,13 +44,13 @@ class Room(object):
         # return Room(*room)
 
     @staticmethod
-    def pivate_check(name):
+    def private_check(name):
         with SQLite() as db:
             result = db.execute(
                     "SELECT is_private FROM rooms WHERE name = ?",
                     (name,))
             room = result.fetchone()
-        return room[0]
+        return room[0] == 1
         # if room is None:
         #     raise ApplicationError(
         #             "Room with name {} not found".format(name), 404)
@@ -80,6 +80,13 @@ class Room(object):
         with SQLite() as db:
             result = db.execute(
                     "SELECT name FROM rooms WHERE is_private = 1").fetchall()                    
+            return [''.join(name) for name in result]
+
+    @staticmethod
+    def all_rooms():
+        with SQLite() as db:
+            result = db.execute(
+                    "SELECT name FROM rooms").fetchall()                    
             return [''.join(name) for name in result]
 
     @staticmethod

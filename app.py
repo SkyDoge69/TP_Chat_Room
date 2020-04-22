@@ -117,57 +117,49 @@ def message(data):
 
 @socketio.on('join')
 def join(data):
-    if Room.pivate_check(data['room']) == 1:
+    if Room.private_check(data['room']):
         if Invite.check_for_invite(data['room'], data['username']):
             join_room(data['room'])
             send({'msg': data['username'] + " has joined the " + data['room'] + " room."}, room=data['room'])
-            for user in User.all():
-                if user.name == data['username']:
-                    user.update_room(data['room'], data['username'])
-        # elif not Invite.check_for_invite(data['room'], data['username']):
+            update_found_user(data['username'], data['room'])
         else:
             join_room("Lounge")
             send({'msg': "You are not invited, choose another room."})
-            for user in User.all():
-                if user.name == data['username']:
-                    user.update_room(data['room'], data['username'])
+            update_found_user(data['username'], data['room'])
     else:
         join_room(data['room'])
         send({'msg': data['username'] + " has joined the " + data['room'] + " room."}, room=data['room'])
-        for user in User.all():
-            if user.name == data['username']:
-                user.update_room(data['room'], data['username'])
+        update_found_user(data['username'], data['room'])
+
 
 @socketio.on('leave')
 def leave(data):
     leave_room(data['room'])
     send({'msg': data['username'] + " has left the " + data['room'] + " room."}, room=data['room'])
  
+
 @socketio.on('create_room')
 def create_room(data):
-    for current_room in Room.all_neznam():  
+    for current_room in Room.all_rooms():  
         send({'msg': data['username'] + " has created " +  data['name'] + " room. Refresh page."}, room=current_room)
     Invite.add_invite(data['name'], data['username'])
     Room.add_room(0, data['name'])
 
+
 @socketio.on('create_private_room')
 def create_private_room(data): 
-    for current_room in Room.all_private():  
+    for current_room in Room.all_rooms():  
         send({'msg': data['username'] + " has created 'private' " +  data['name'] + " room. Refresh page."}, room=current_room)
     Invite.add_invite(data['name'], data['username'])
     Room.add_room(1, data['name'])
+
 
 @socketio.on('close_room')
 def close_room(data):
     if data['name'] == "Lounge" or data['name'] == "Shisha" or data['name'] == "Games" or data['name'] == "Coding":
         send({'msg': "Cannot delete static rooms!"}, room=data['room'])
     else:
-        if data['name'] in Room.all_neznam() and Invite.check_for_invite(data['name'], data['username']):
-            for current_room in Room.all_neznam():  
-                send({'msg': data['username'] + " has deleted " +  data['name'] + " room. Refresh page."}, room=current_room)
-            Room.delete_room(data['name'])
-            Invite.delete_invite(data['name'])
-        elif data['name'] in Room.all_private() and Invite.check_for_invite(data['name'], data['username']):
+        if data['name'] in Room.all_rooms() and Invite.check_for_invite(data['name'], data['username']):
             for current_room in Room.all_neznam():  
                 send({'msg': data['username'] + " has deleted " +  data['name'] + " room. Refresh page."}, room=current_room)
             Room.delete_room(data['name'])
@@ -194,6 +186,11 @@ def invite_user(data):
             send({'msg': "User does not exist!"})
             raise ApplicationError("User doesn't exist", 404)
 
+
+def update_found_user(username, room):
+    for user in User.all():
+        if user.name == username:
+            user.update_room(room, username)
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)

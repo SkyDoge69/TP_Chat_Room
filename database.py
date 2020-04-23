@@ -37,6 +37,16 @@ CREATE TABLE IF NOT EXISTS invites
 ''')
 conn.commit()
 
+# conn.cursor().execute('''
+# CREATE TABLE IF NOT EXISTS profiles
+#     (
+#         id INTEGER PRIMARY KEY AUTOINCREMENT,
+#         username STRING,
+#         description TEXT NOT NULL
+#     )
+# ''')
+# conn.commit()
+
 # SELECT * FROM ime WHERE room_id = ? and username = ?", (id, name)
 # SELECT * FROM ime WHERE room_id = ?, 
 

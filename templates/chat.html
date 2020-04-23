@@ -3,14 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>Page Title</title>
-
-
-    <!-- <style>
+    <style>
         #logout_user {
-            float:right;
+            float: right;
         }
-    </style> -->
-
+    </style>
 
 </head>
 <body>
@@ -23,7 +20,7 @@
             <button id="create_room" type="button">Create room</button>
             <button id="create_private_room" type="button">Create private room</button>
             <button id="delete_room" type="button">Delete room</button>
-            <!-- <button id="logout_user" type="button">Log out</button> -->
+            <a id="logout_user" href="{{ url_for('logout') }}">Log out</a>
         </div>
 
         

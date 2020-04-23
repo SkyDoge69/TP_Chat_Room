@@ -43,8 +43,11 @@ def main():
 def chat():
     return render_template("chat.html", username=current_user.name, rooms = Room.all_neznam(), private_rooms = Room.all_private())
 
-@app.route('/logout')
-@login_required
+@app.route("/profile", methods=['GET', 'POST'])
+def profile():
+    return render_template("profile.html", username=current_user.name, description=Profile.get_description(current_user.name))
+
+@app.route('/logout', methods=['GET'])
 def logout():
     logout_user()
     flash('You have successfully logged yourself out.')
@@ -117,11 +120,13 @@ def delete_user(user_id):
     user = User.find(user_id)
     user.delete(user_id)
     return ""
- 
+
+
+
+
 @socketio.on('message')
 def message(data):
     send({'msg': data['msg'], 'username': data['username'], 'time_stamp': strftime('%b-%d %I:%M%p', localtime())}, room=data['room'])
-
 
 @socketio.on('join')
 def join(data):
@@ -139,13 +144,11 @@ def join(data):
         send({'msg': data['username'] + " has joined the " + data['room'] + " room."}, room=data['room'])
         update_found_user(data['username'], data['room'])
 
-
 @socketio.on('leave')
 def leave(data):
     leave_room(data['room'])
     send({'msg': data['username'] + " has left the " + data['room'] + " room."}, room=data['room'])
  
-
 @socketio.on('create_room')
 def create_room(data):
     for current_room in Room.all_rooms():  
@@ -153,14 +156,12 @@ def create_room(data):
     Invite.add_invite(data['name'], data['username'])
     Room.add_room(0, data['name'])
 
-
 @socketio.on('create_private_room')
 def create_private_room(data): 
     for current_room in Room.all_rooms():  
         send({'msg': data['username'] + " has created 'private' " +  data['name'] + " room. Refresh page."}, room=current_room)
     Invite.add_invite(data['name'], data['username'])
     Room.add_room(1, data['name'])
-
 
 @socketio.on('close_room')
 def close_room(data):
@@ -174,7 +175,6 @@ def close_room(data):
             Invite.delete_invite(data['name'])
         else:
             send({'msg': "Cannot delete this room"})
-
 
 @socketio.on('invite_user')
 def invite_user(data):
@@ -194,11 +194,6 @@ def invite_user(data):
             send({'msg': "User does not exist!"})
             raise ApplicationError("User doesn't exist", 404)
 
-# @socketio.on('exit_user')
-# @login_required
-# def logout():
-#     logout_user()
-#     return redirect(url_for('main'))
 
 def update_found_user(username, room):
     for user in User.all():

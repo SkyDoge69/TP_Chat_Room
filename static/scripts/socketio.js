@@ -57,7 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
         'username': username, 'room': room});
         document.querySelector('#invite_name').value = '';
     }
-        
+    
+    
     document.querySelectorAll('.select-room').forEach(p => {
         p.onclick = () => {
             let newRoom = p.innerHTML;

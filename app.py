@@ -1,7 +1,7 @@
 from time import localtime, strftime
  
 from flask import Flask, request, render_template, jsonify, redirect, url_for, flash
-from flask_login import LoginManager, login_user, current_user, logout_user
+from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 from flask_socketio import SocketIO, send, emit, join_room, leave_room, close_room
  
 import json
@@ -14,26 +14,21 @@ from errors import register_error_handlers
 from errors import ApplicationError
  
 from security.basic_authentication import generate_password_hash, init_basic_auth
-from werkzeug.security import generate_password_hash, check_password_hash
- 
+from werkzeug.security import generate_password_hash, check_password_hash 
 from wtform_fields import *
- 
-app = Flask(__name__)
 
+app = Flask(__name__)
 auth = init_basic_auth()
 app.secret_key = 'takamekefinenemekefibratnqkude33trqqima'
-
 login_manager = LoginManager()
 login_manager.init_app(app)
+register_error_handlers(app) 
+socketio = SocketIO(app)
+
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.find(user_id)
-
-register_error_handlers(app)
- 
-socketio = SocketIO(app)
-
 
 @app.route("/", methods=["GET", "POST"])
 def main():
@@ -45,10 +40,15 @@ def main():
     return render_template("index.html", form=login_form)
  
 @app.route("/chat", methods=['GET', 'POST'])
-#@auth.login_required
 def chat():
     return render_template("chat.html", username=current_user.name, rooms = Room.all_neznam(), private_rooms = Room.all_private())
- 
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have successfully logged yourself out.')
+    return redirect(url_for('main'))
 
 @app.route("/api/rooms", methods=["POST"])
 def create_room():
@@ -58,7 +58,6 @@ def create_room():
     room = Room(room_data["is_private"], room_data['name'])
     room.save()
     return jsonify(room.to_dict()), 201
-
 
 @app.route("/api/rooms", methods=["GET"])
 def list_rooms():
@@ -83,7 +82,6 @@ def list_invites():
         result["result"].append(invite.to_dict())
     return jsonify(result), 201
 
-
 @app.route("/api/users", methods=["POST"])
 def create_user():
     user_data = request.get_json(force=True, silent=True)
@@ -93,20 +91,17 @@ def create_user():
     user = User(user_data['name'], user_data['password'], user_data['room'])
     user.save()
     return jsonify(user.to_dict()), 201
- 
- 
+
 @app.route("/api/users/<user_id>", methods=["GET"])
 def get_user(user_id):
-    return jsonify(User.find(user_id).to_dict())
- 
- 
+    return jsonify(User.find(user_id).to_viewable())
+
 @app.route("/api/users", methods=["GET"])
 def list_users():
     result = {"result": []}
     for user in User.all():
         result["result"].append(user.to_viewable())
     return jsonify(result), 201
- 
  
 @app.route("/api/users/<user_id>", methods=["PATCH"])
 def update_user(user_id):
@@ -117,17 +112,14 @@ def update_user(user_id):
     user = User.find(user_id)
     return jsonify(user.save().to_dict()), 201
  
- 
 @app.route("/api/users/<user_id>", methods=["DELETE"])
 def delete_user(user_id):
     user = User.find(user_id)
     user.delete(user_id)
     return ""
  
- 
 @socketio.on('message')
 def message(data):
-    print(f"\n\n{data}\n\n")
     send({'msg': data['msg'], 'username': data['username'], 'time_stamp': strftime('%b-%d %I:%M%p', localtime())}, room=data['room'])
 
 
@@ -202,6 +194,11 @@ def invite_user(data):
             send({'msg': "User does not exist!"})
             raise ApplicationError("User doesn't exist", 404)
 
+# @socketio.on('exit_user')
+# @login_required
+# def logout():
+#     logout_user()
+#     return redirect(url_for('main'))
 
 def update_found_user(username, room):
     for user in User.all():

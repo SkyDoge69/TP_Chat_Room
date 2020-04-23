@@ -4,6 +4,14 @@
     <meta charset="utf-8">
     <title>Page Title</title>
 
+
+    <!-- <style>
+        #logout_user {
+            float:right;
+        }
+    </style> -->
+
+
 </head>
 <body>
     <nav>
@@ -15,8 +23,10 @@
             <button id="create_room" type="button">Create room</button>
             <button id="create_private_room" type="button">Create private room</button>
             <button id="delete_room" type="button">Delete room</button>
+            <!-- <button id="logout_user" type="button">Log out</button> -->
         </div>
 
+        
         <div id="invite-section">
             <br>
             <input type="text" id="invite_name" placeholder="Username">
@@ -54,7 +64,6 @@
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
     <script src="{{url_for('static', filename='scripts/socketio.js')}}"></script>
-
 
 </body>
 </html>

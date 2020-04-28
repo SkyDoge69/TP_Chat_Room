@@ -71,6 +71,10 @@
     border: none;
 }
 
+.btn-info {
+    background-color: #66a1ee;
+    border: none;
+}
 
 #rightside-pannel {
     overflow: hidden; /* Make this div take up the rest of the horizontal space, and no more */
@@ -108,12 +112,6 @@ input[type=text]:focus{
     border-color: grey;
     border-width: 0.5px;
     border-style: solid;
-    background-color: #C2DBFB;
-/* animation */
-    animation-name: fadeIn;
-    animation-duration: 0.75s;
-    animation-fill-mode: forwards;
-    animation-timing-function: ease-in-out;
 }
 
 .my-msg {
@@ -148,7 +146,7 @@ input[type=text]:focus{
 .my-username {
     font-weight: bold;
     font-size: 1.1em;
-    color: #FF6B13;
+    color: rgb(90, 196, 173);
 }
 
 #msg-input {

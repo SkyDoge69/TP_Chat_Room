@@ -169,7 +169,7 @@ def close_room(data):
         send({'msg': "Cannot delete static rooms!"}, room=data['room'])
     else:
         if data['name'] in Room.all_rooms() and Invite.check_for_invite(data['name'], data['username']):
-            for current_room in Room.all_neznam():  
+            for current_room in Room.all_rooms():  
                 send({'msg': data['username'] + " has deleted " +  data['name'] + " room. Refresh page."}, room=current_room)
             Room.delete_room(data['name'])
             Invite.delete_invite(data['name'])

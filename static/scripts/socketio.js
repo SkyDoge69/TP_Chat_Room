@@ -1,8 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     var socket = io.connect('http://' + document.domain + ':' + location.port);
-
+    
+    
+    const username = document.querySelector('#get-username').innerHTML;
     let room = "Lounge";
     joinRoom("Lounge");
+    
     //maybe leter heterosexualen tp
 
     socket.on('message', data => {
@@ -11,14 +14,37 @@ document.addEventListener('DOMContentLoaded', () => {
         const span_timestamp = document.createElement('span');
         const br = document.createElement('br');
         
-        if (data.username) {
-            span_username.innerHTML = data.username;
-            span_timestamp.innerHTML = data.time_stamp;
+        if (data.username == username) {
+
+            p.setAttribute("class", "my-msg");
+
+            span_username.setAttribute("class", "my-username");
+            span_username.innerText = data.username;
+
+            span_timestamp.setAttribute("class", "timestamp");
+            span_timestamp.innerText = data.time_stamp;
+
             p.innerHTML = span_username.outerHTML + br.outerHTML + data.msg + br.outerHTML + span_timestamp.outerHTML;
+            
             document.querySelector('#display-message-section').append(p);
-        } else {
+        }  else if (typeof data.username !== 'undefined') {
+            p.setAttribute("class", "others-msg");
+            
+            span_username.setAttribute("class", "other-username");
+            span_username.innerText = data.username;
+            
+            span_timestamp.setAttribute("class", "timestamp");
+            span_timestamp.innerText = data.time_stamp;
+
+            p.innerHTML += span_username.outerHTML + br.outerHTML + data.msg + br.outerHTML + span_timestamp.outerHTML;
+            
+            document.querySelector('#display-message-section').append(p);
+        }
+        else {
             printSysMsg(data.msg);
         }
+
+        scrollDownChatWindow();
         
     });
 
@@ -81,10 +107,17 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#display-message-section').innerHTML = '';
     }
     
+    function scrollDownChatWindow() {
+        const chatWindow = document.querySelector("#display-message-section");
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
     function printSysMsg(msg) {
         const p = document.createElement('p');
+        p.setAttribute("class", "system-msg");
         p.innerHTML = msg;
         document.querySelector('#display-message-section').append(p);
+        document.querySelector("#user_message").focus();
     }
 
 })

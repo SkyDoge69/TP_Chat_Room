@@ -4,11 +4,12 @@ from flask_login import UserMixin
 
 class User(UserMixin):
  
-    def __init__(self, name, password, room, user_id=None):
+    def __init__(self, name, password, room, description, user_id=None):
         self.id = user_id
         self.name = name
         self.password = password
         self.room = room
+        self.description = description
  
     def to_dict(self):
         user_data = self.__dict__
@@ -39,7 +40,7 @@ class User(UserMixin):
         result = None
         with SQLite() as db:
             result = db.execute(
-                    "SELECT name, password, room, id FROM user WHERE id = ?",
+                    "SELECT name, password, room, description, id FROM user WHERE id = ?",
                     (user_id,))
         user = result.fetchone()
         if user is None:
@@ -52,7 +53,7 @@ class User(UserMixin):
         result = None
         with SQLite() as db:
             result = db.execute(
-                    "SELECT name, password, room, id FROM user WHERE name = ?",
+                    "SELECT name, password, room, description, id FROM user WHERE name = ?",
                     (name,))
         user = result.fetchone()
         if user is None:
@@ -81,20 +82,31 @@ class User(UserMixin):
                 return False
             else:
                 return True
+
+    def get_description(username):
+        result = None
+        with SQLite() as db:
+            result = db.execute(
+                    "SELECT description FROM user WHERE name = ?",
+                    (username,))
+            result = result.fetchone()                 
+        return ''.join(result[0])
+
+
  
     @staticmethod
     def all():
         with SQLite() as db:
             result = db.execute(
-                    "SELECT name, password, room, id FROM user").fetchall()
+                    "SELECT name, password, room, description, id FROM user").fetchall()
             return [User(*row) for row in result]
  
     def __get_save_query(self):
         query = "{} INTO user {} VALUES {}"
         if self.id == None:
-            args = (self.name, self.password, self.room)
-            query = query.format("INSERT", "(name, password, room)", args)
+            args = (self.name, self.password, self.room, self.description)
+            query = query.format("INSERT", "(name, password, room, description)", args)
         else:
-            args = (self.id, self.name, self.password, self.room)
-            query = query.format("REPLACE", "(id, name, password, room)", args)
+            args = (self.id, self.name, self.password, self.room, self.description)
+            query = query.format("REPLACE", "(id, name, password, room, description)", args)
         return query

@@ -43,9 +43,10 @@ def main():
 def chat():
     return render_template("chat.html", username=current_user.name, rooms = Room.all_neznam(), private_rooms = Room.all_private())
 
-@app.route("/profile", methods=['GET', 'POST'])
-def profile():
-    return render_template("profile.html", username=current_user.name, description=Profile.get_description(current_user.name))
+@app.route("/profiles/<username>", methods=['GET', 'POST'])
+def profile(username):
+    # description = User.get_description(username)
+    return render_template("profile.html", username = username, description = User.get_description(username))
 
 @app.route('/logout', methods=['GET'])
 def logout():
@@ -91,7 +92,7 @@ def create_user():
     if user_data == None:
         return "Bad request", 401
     #hashed_password = generate_password_hash(user_data["password"])
-    user = User(user_data['name'], user_data['password'], user_data['room'])
+    user = User(user_data['name'], user_data['password'], user_data['room'], user_data['description'])
     user.save()
     return jsonify(user.to_dict()), 201
 

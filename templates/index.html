@@ -3,17 +3,30 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Chat room</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/login_style.css') }}">
+
 </head>
 <body>
-    <h1>Welcome to chat</h1>
-    <form action="{{ url_for('main') }}", method="POST">
-        {{ displayField(form.username, 'Username', autocomplete="off", autofocus=true) }}
-        {{ displayField(form.password, 'Password') }}
-    <div>
-        {{ form.submit_button }}
+    <div id="main-section">
+        <div class="jumbotron">
+            <h1 class="display-4">Igrachite Official</h1>
+            <p class="lead">Dobri, be impressed! </p>
+            </div>
+        <div id="login-section">
+            <h1>Welcome to chat</h1>
+            <form action="{{ url_for('main') }}", method="POST">
+                {{ displayField(form.username, 'Username', autocomplete="off", autofocus=true) }}
+                {{ displayField(form.password, 'Password') }}
+                <div class="form-group">
+                    <input type="submit" value="Login" class="btn btn-primary">
+                </div>
+        </div>
     </div>
-    {{ form.csrf_token }}
+            {{ form.csrf_token }}
 
 </body>
 </html>

@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS user
         name TEXT NOT NULL UNIQUE,
         password TEXT NOT NULL,
         room STRING,
+        description TEXT NOT NULL,
         FOREIGN KEY(room) REFERENCES rooms(name)
     )
 ''')

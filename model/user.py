@@ -4,12 +4,13 @@ from flask_login import UserMixin
 
 class User(UserMixin):
  
-    def __init__(self, name, password, room, description, user_id=None):
+    def __init__(self, name, password, room, description, picture_location, user_id=None):
         self.id = user_id
         self.name = name
         self.password = password
         self.room = room
         self.description = description
+        self.picture_location = picture_location
  
     def to_dict(self):
         user_data = self.__dict__
@@ -40,7 +41,7 @@ class User(UserMixin):
         result = None
         with SQLite() as db:
             result = db.execute(
-                    "SELECT name, password, room, description, id FROM user WHERE id = ?",
+                    "SELECT name, password, room, description, picture_location, id FROM user WHERE id = ?",
                     (user_id,))
         user = result.fetchone()
         if user is None:
@@ -53,7 +54,7 @@ class User(UserMixin):
         result = None
         with SQLite() as db:
             result = db.execute(
-                    "SELECT name, password, room, description, id FROM user WHERE name = ?",
+                    "SELECT name, password, room, description, picture_location, id FROM user WHERE name = ?",
                     (name,))
         user = result.fetchone()
         if user is None:
@@ -83,30 +84,38 @@ class User(UserMixin):
             else:
                 return True
 
-    def get_description(username):
+    def get_description(user_id):
         result = None
         with SQLite() as db:
             result = db.execute(
-                    "SELECT description FROM user WHERE name = ?",
-                    (username,))
+                    "SELECT description FROM user WHERE id = ?",
+                    (user_id,))
+            result = result.fetchone()                 
+        return ''.join(result[0])
+
+    def get_picture_location(user_id):
+        result = None
+        with SQLite() as db:
+            result = db.execute(
+                    "SELECT picture_location FROM user WHERE id = ?",
+                    (user_id,))
             result = result.fetchone()                 
         return ''.join(result[0])
 
 
- 
     @staticmethod
     def all():
         with SQLite() as db:
             result = db.execute(
-                    "SELECT name, password, room, description, id FROM user").fetchall()
+                    "SELECT name, password, room, description, picture_location, id FROM user").fetchall()
             return [User(*row) for row in result]
  
     def __get_save_query(self):
         query = "{} INTO user {} VALUES {}"
         if self.id == None:
-            args = (self.name, self.password, self.room, self.description)
-            query = query.format("INSERT", "(name, password, room, description)", args)
+            args = (self.name, self.password, self.room, self.description, self.picture_location)
+            query = query.format("INSERT", "(name, password, room, description, picture_location)", args)
         else:
-            args = (self.id, self.name, self.password, self.room, self.description)
-            query = query.format("REPLACE", "(id, name, password, room, description)", args)
+            args = (self.id, self.name, self.password, self.room, self.description, self.picture_location)
+            query = query.format("REPLACE", "(id, name, password, room, description, picture_location)", args)
         return query

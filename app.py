@@ -1,6 +1,8 @@
+import os
+import base64
 from time import localtime, strftime
  
-from flask import Flask, request, render_template, jsonify, redirect, url_for, flash
+from flask import Flask, request, render_template, jsonify, redirect, url_for, flash, send_from_directory
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 from flask_socketio import SocketIO, send, emit, join_room, leave_room, close_room
  
@@ -18,12 +20,15 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from wtform_fields import *
 
 app = Flask(__name__)
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 auth = init_basic_auth()
 app.secret_key = 'takamekefinenemekefibratnqkude33trqqima'
 login_manager = LoginManager()
 login_manager.init_app(app)
 register_error_handlers(app) 
 socketio = SocketIO(app)
+
+print(User.get_picture_location(2))
 
 
 @login_manager.user_loader
@@ -43,10 +48,11 @@ def main():
 def chat():
     return render_template("chat.html", username=current_user.name, rooms = Room.all_neznam(), private_rooms = Room.all_private())
 
-@app.route("/profiles/<username>", methods=['GET', 'POST'])
-def profile(username):
-    # description = User.get_description(username)
-    return render_template("profile.html", username = username, description = User.get_description(username))
+
+@app.route("/profiles/<user_id>", methods=['GET', 'POST'])
+def profile(user_id):
+    picture_location = User.get_picture_location(user_id).encode("utf-8")
+    return render_template("profile.html", username = User.find(user_id).name, description = User.get_description(user_id), picture_location = (base64.b64encode(picture_location)).decode('utf-8'))
 
 @app.route('/logout', methods=['GET'])
 def logout():
@@ -92,7 +98,7 @@ def create_user():
     if user_data == None:
         return "Bad request", 401
     #hashed_password = generate_password_hash(user_data["password"])
-    user = User(user_data['name'], user_data['password'], user_data['room'], user_data['description'])
+    user = User(user_data['name'], user_data['password'], user_data['room'], user_data['description'], user_data['picture_location'])
     user.save()
     return jsonify(user.to_dict()), 201
 

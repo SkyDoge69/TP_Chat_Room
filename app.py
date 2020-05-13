@@ -1,5 +1,4 @@
 import os
-import base64
 from time import localtime, strftime
  
 from flask import Flask, request, render_template, jsonify, redirect, url_for, flash, send_from_directory
@@ -28,8 +27,6 @@ login_manager.init_app(app)
 register_error_handlers(app) 
 socketio = SocketIO(app)
 
-print(User.get_picture_location(2))
-
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -51,8 +48,8 @@ def chat():
 
 @app.route("/profiles/<user_id>", methods=['GET', 'POST'])
 def profile(user_id):
-    picture_location = User.get_picture_location(user_id).encode("utf-8")
-    return render_template("profile.html", username = User.find(user_id).name, description = User.get_description(user_id), picture_location = (base64.b64encode(picture_location)).decode('utf-8'))
+    user = User.find(user_id)
+    return render_template("profile.html", user = user)
 
 @app.route('/logout', methods=['GET'])
 def logout():

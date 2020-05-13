@@ -84,24 +84,6 @@ class User(UserMixin):
             else:
                 return True
 
-    def get_description(user_id):
-        result = None
-        with SQLite() as db:
-            result = db.execute(
-                    "SELECT description FROM user WHERE id = ?",
-                    (user_id,))
-            result = result.fetchone()                 
-        return ''.join(result[0])
-
-    def get_picture_location(user_id):
-        result = None
-        with SQLite() as db:
-            result = db.execute(
-                    "SELECT picture_location FROM user WHERE id = ?",
-                    (user_id,))
-            result = result.fetchone()                 
-        return ''.join(result[0])
-
 
     @staticmethod
     def all():

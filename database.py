@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS user
         password TEXT NOT NULL,
         room STRING,
         description TEXT NOT NULL,
+        picture_location STRING,
         FOREIGN KEY(room) REFERENCES rooms(name)
     )
 ''')

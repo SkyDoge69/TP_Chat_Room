@@ -4,6 +4,9 @@ from time import localtime, strftime
 from flask import Flask, request, render_template, jsonify, redirect, url_for, flash, send_from_directory
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 from flask_socketio import SocketIO, send, emit, join_room, leave_room, close_room
+import requests
+from PIL import Image
+
  
 import json
 import uuid
@@ -201,6 +204,19 @@ def invite_user(data):
 @socketio.on('send_gif')
 def send_gif(image_data):
     print(image_data['gif_url'])
+    uri = image_data['gif_url']
+    with open('./static/gifs/test_gif.gif', 'wb') as f:
+        f.write(requests.get(uri).content)
+    send({'msg': image_data['gif_url']}, room=current_user.room)
+    # try:
+    #     im.seek(1)
+    # except EOFError:
+    #     print('Warning: it is a single frame GIF.')
+    #     return im, 1
+    # return im, 2
+
+    # current_index = im.tell() + 1
+    # im.seek(current_index)
     
 
 # @socketio.on('image-upload')

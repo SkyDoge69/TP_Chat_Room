@@ -48,15 +48,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     //create
     document.querySelector('#create_room').onclick = () => {
-        socket.emit('create_room', {'name': document.querySelector('#room_name').value,
-        'username': username});
-        document.querySelector('#room_name').value = '';
+        if (document.querySelector('#room_name').value != "") {
+            socket.emit('create_room', {'name': document.querySelector('#room_name').value,
+            'username': username});
+            document.querySelector('#room_name').value = ''; 
+        } else {
+            printSysMsg("Room without name not possible!");
+        }
     }
 
     document.querySelector('#create_private_room').onclick = () => {
-        socket.emit('create_private_room', {'name': document.querySelector('#room_name').value,
-        'username': username});
-        document.querySelector('#room_name').value = '';
+        if (document.querySelector('#room_name').value != "") {
+            printSysMsg("Room without name not possible!");
+            socket.emit('create_private_room', {'name': document.querySelector('#room_name').value,
+            'username': username});
+            document.querySelector('#room_name').value = '';
+        } else {
+            printSysMsg("Room without name not possible!");
+        }
     }
 
 
@@ -89,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
             img.src = content.data[0].images.downsized.url;
             img.alt = content.data[0].title;
             var img_tag = `${ img.outerHTML }`;
-            socket.emit('send_gif', {'gif_url': img_tag});
+            socket.emit('send_gif', {'gif_url': img.src});
             document.querySelector("#search").value = "";
             document.querySelector('#display-message-section').append(img);
             img.setAttribute("class", "my-img");

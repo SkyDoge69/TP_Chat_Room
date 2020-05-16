@@ -16,6 +16,7 @@
     padding-right:1em;
     border-right: 0.5px solid #898c91;
     overflow: scroll;
+    overflow-x: hidden;
     height: calc(100vh - 85px); 
 }
 
@@ -51,17 +52,12 @@
     cursor: pointer;
 }
 
-#room_name {
-    margin-left: 0.2em;
-    padding-right: 2.35em;
-    margin-bottom: 0.2em;
-}
 
 #room_name {
     margin-left: 0.2em;
     margin-bottom: 0.2em;
     padding-left: 0.33em;
-    width: 8.5em;
+    width: 11.8em;
 }
 
 #invite_name {
@@ -71,22 +67,17 @@
     width: 8.5em;
 }
 
-#create_private_room {
-    margin-left: 10.35em;
-}
 
 #delete_room {
-    margin-left: 10.35em; 
+    margin-left: 4em;
 }
 
 .btn-primary {
     margin: 0.2em;
-    background-color: #66a1ee;
-    color:#423e3e;
     border: none;
 }
 
-.btn-info {
+#send_message {
     background-color: #66a1ee;
     border: none;
 }

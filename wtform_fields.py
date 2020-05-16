@@ -9,7 +9,6 @@ def invalid_credentials(form, field):
     password_entered = field.data
     
     user_object = User.find_by_name(username_entered)
-    print("name: " + user_object.name)
     if user_object is None:
         raise ValidationError("No user found!")
     elif User.find_user_password(username_entered, password_entered) == False:

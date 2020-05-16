@@ -139,6 +139,14 @@ input[type=text]:focus{
     border-style: solid;
 }
 
+.my-img {
+    float: right;
+    border-radius: 5px;
+    border-color: #206ED2;
+    border-width: 1px;
+    border-style: solid;
+}
+
 .system-msg {
     margin-right:7em;
     margin-left: 1em;

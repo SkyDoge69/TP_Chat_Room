@@ -65,6 +65,14 @@
         <div id="rightside-panel">
             <div id="display-message-section">
             </div>
+            <main>
+                <form>
+                  <label for="search">Search</label>
+                  <input id="search" type="search" />
+                  <button id="btnSearch">Go</button>
+                </form>
+                <div class="out"></div>
+              </main>
             <div id="input-area" class="input-group mb-3">
                 <input type="text" id="user_message" class="form-control" placeholder="Type here..." aria-label="Type a message" aria-describedby="basic-addon2" autocomplete="off">
                 <div class="input-group-append">
@@ -79,10 +87,10 @@
 
 
     <script src="{{ url_for('static', filename='scripts/chat_page.js') }}"></script>
-    <script src="{{ url_for('static', filename='scripts/chat_page.js') }}"></script>
+    <script src="{{url_for('static', filename='scripts/socketio.js')}}"></script>
+    <!-- <script src="{{url_for('static', filename='scripts/giphy_api.js')}}"></script> -->
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
-    <script src="{{url_for('static', filename='scripts/socketio.js')}}"></script>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>

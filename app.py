@@ -198,6 +198,14 @@ def invite_user(data):
             send({'msg': "User does not exist!"})
             raise ApplicationError("User doesn't exist", 404)
 
+@socketio.on('send_gif')
+def send_gif(image_data):
+    print(image_data['gif_url'])
+    
+
+# @socketio.on('image-upload')
+# def imageUpload(image):
+#     emit('send-image', image, broadcast = True)
 
 def update_found_user(username, room):
     for user in User.all():

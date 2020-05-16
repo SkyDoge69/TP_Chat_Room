@@ -15,37 +15,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const br = document.createElement('br');
         
         if (data.username == username) {
-
             p.setAttribute("class", "my-msg");
-
             span_username.setAttribute("class", "my-username");
             span_username.innerText = data.username;
-
             span_timestamp.setAttribute("class", "timestamp");
             span_timestamp.innerText = data.time_stamp;
-
             p.innerHTML = span_username.outerHTML + br.outerHTML + data.msg + br.outerHTML + span_timestamp.outerHTML;
-            
             document.querySelector('#display-message-section').append(p);
         }  else if (typeof data.username !== 'undefined') {
-            p.setAttribute("class", "others-msg");
-            
+            p.setAttribute("class", "others-msg");    
             span_username.setAttribute("class", "other-username");
             span_username.innerText = data.username;
-            
             span_timestamp.setAttribute("class", "timestamp");
             span_timestamp.innerText = data.time_stamp;
-
             p.innerHTML += span_username.outerHTML + br.outerHTML + data.msg + br.outerHTML + span_timestamp.outerHTML;
-            
             document.querySelector('#display-message-section').append(p);
         }
         else {
             printSysMsg(data.msg);
         }
-
         scrollDownChatWindow();
-        
     });
 
     //send
@@ -83,8 +72,33 @@ document.addEventListener('DOMContentLoaded', () => {
         'username': username, 'room': room});
         document.querySelector('#invite_name').value = '';
     }
-    
-    
+    //gif
+    document.getElementById("btnSearch").addEventListener("click", ev => {
+        let APIKEY = "TtyDmfIxKqgeUJAmgzDpucrWJGH909ac";
+        ev.preventDefault();
+        let url = `https://api.giphy.com/v1/gifs/search?api_key=${APIKEY}&limit=1&q=`;
+        let str = document.getElementById("search").value.trim();
+        url = url.concat(str);
+        console.log(url);
+        fetch(url)
+          .then(response => response.json())
+          .then(content => {
+            console.log(content.data);
+            console.log("META", content.meta);
+            let img = document.createElement("img");
+            img.src = content.data[0].images.downsized.url;
+            img.alt = content.data[0].title;
+            var img_tag = `${ img.outerHTML }`;
+            socket.emit('send_gif', {'gif_url': img_tag});
+            document.querySelector("#search").value = "";
+            document.querySelector('#display-message-section').append(img);
+            img.setAttribute("class", "my-img");
+            span_username.setAttribute("class", "my-username");
+            span_username.innerText = data.username;
+            span_timestamp.setAttribute("class", "timestamp");
+            span_timestamp.innerText = data.time_stamp;
+    })
+});
     document.querySelectorAll('.select-room').forEach(p => {
         p.onclick = () => {
             let newRoom = p.innerHTML;
@@ -119,5 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#display-message-section').append(p);
         document.querySelector("#user_message").focus();
     }
-
+          
 })
+

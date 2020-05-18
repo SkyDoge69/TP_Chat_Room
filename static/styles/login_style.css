@@ -1,0 +1,63 @@
+h1 {
+    color: #206ED2;
+}
+
+#main-section {
+    overflow: hidden; /* Makee this div contain its floated children */
+    width: 100%;
+}
+
+.jumbotron {
+    margin-bottom: 0;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+
+#image-section {
+    min-width: 30%;
+    max-width: 30%;
+    margin-right: 2em;
+    padding: 0 0 0 2em;
+    float: left;
+}
+
+#login-section {
+    float: left;
+    margin-left: 2em;
+    margin-top: 1em;
+}
+
+h2 {
+    color: #5b9cfc;
+}
+
+
+@media (max-width: 588px) {
+    picture {
+        display: none;
+    }
+    #righthand-side {
+        padding-left: 1.5em;
+    }
+}
+
+@media (min-width: 1000px) {
+    #righthand-side {
+        max-width: 50%;
+    }
+}
+
+.formError {
+    list-style-type:none;
+    padding:0px;
+    color: red;
+}
+
+input[type='text']:focus, input[type='password']:focus {
+    border-color: #aeff45;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 10px #aeff45;
+}​
+
+.btn btn-primary {
+    font-size: 0.2px;
+}

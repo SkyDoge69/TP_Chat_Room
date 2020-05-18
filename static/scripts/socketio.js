@@ -17,26 +17,29 @@ document.addEventListener('DOMContentLoaded', () => {
         if (data.username == username) {
             p.setAttribute("class", "my-msg");
             span_username.setAttribute("class", "my-username");
-            span_username.innerText = data.username;
-            span_timestamp.setAttribute("class", "timestamp");
-            span_timestamp.innerText = data.time_stamp;
-            p.innerHTML = span_username.outerHTML + br.outerHTML + data.msg + br.outerHTML + span_timestamp.outerHTML;
-            document.querySelector('#display-message-section').append(p);
         }  else if (typeof data.username !== 'undefined') {
             p.setAttribute("class", "others-msg");    
             span_username.setAttribute("class", "other-username");
-            span_username.innerText = data.username;
-            span_timestamp.setAttribute("class", "timestamp");
-            span_timestamp.innerText = data.time_stamp;
-            p.innerHTML += span_username.outerHTML + br.outerHTML + data.msg + br.outerHTML + span_timestamp.outerHTML;
-            document.querySelector('#display-message-section').append(p);
         }
         else {
             printSysMsg(data.msg);
         }
+        span_username.innerText = data.username;
+        span_timestamp.setAttribute("class", "timestamp");
+        span_timestamp.innerText = data.time_stamp;
+        if (data.type == "TEXT") {
+            p.innerHTML += span_username.outerHTML + br.outerHTML + data.msg + br.outerHTML + span_timestamp.outerHTML;
+            document.querySelector('#display-message-section').append(p);
+        } else if(data.type == "IMAGE") {
+            let img = document.createElement("img");
+            img.src = data.msg;
+            //img.setAttribute("class", "my-img");
+            p.innerHTML += span_username.outerHTML + br.outerHTML + span_timestamp.outerHTML;
+            document.querySelector('#display-message-section').append(p);
+            document.querySelector('#display-message-section').append(img);
+        }
         scrollDownChatWindow();
     });
-
     //send
     document.querySelector('#send_message').onclick = () => {
         if (document.querySelector('#user_message').value != "") { 
@@ -92,22 +95,10 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch(url)
           .then(response => response.json())
           .then(content => {
-            console.log(content.data);
-            console.log("META", content.meta);
-            let img = document.createElement("img");
-            img.src = content.data[0].images.downsized.url;
-            img.alt = content.data[0].title;
-            var img_tag = `${ img.outerHTML }`;
-            socket.emit('send_gif', {'gif_url': img.src});
-            document.querySelector("#search").value = "";
-            document.querySelector('#display-message-section').append(img);
-            img.setAttribute("class", "my-img");
-            span_username.setAttribute("class", "my-username");
-            span_username.innerText = data.username;
-            span_timestamp.setAttribute("class", "timestamp");
-            span_timestamp.innerText = data.time_stamp;
-    })
-});
+            socket.emit('send_gif', {'gif_url': content.data[0].images.downsized.url, 'username': username, 'room': room});
+          })
+    });
+
     document.querySelectorAll('.select-room').forEach(p => {
         p.onclick = () => {
             let newRoom = p.innerHTML;
@@ -141,6 +132,21 @@ document.addEventListener('DOMContentLoaded', () => {
         p.innerHTML = msg;
         document.querySelector('#display-message-section').append(p);
         document.querySelector("#user_message").focus();
+    }
+
+    function displayText(data, p) {
+        p.innerHTML += span_username.outerHTML + br.outerHTML + data.msg + br.outerHTML + span_timestamp.outerHTML;
+        document.querySelector('#display-message-section').append(p);
+    }
+
+    function displayImage(msg) {
+        let img = document.createElement("img");
+        img.src = content.data[0].images.downsized.url;
+        img.alt = content.data[0].title;
+        //var img_tag = `${ img.outerHTML }`;
+        socket.emit('send_gif', {'gif_url': img.src});
+        document.querySelector("#search").value = "";
+        document.querySelector('#display-message-section').append(img);
     }
           
 })

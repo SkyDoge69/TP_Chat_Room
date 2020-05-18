@@ -6,7 +6,7 @@ from flask_login import LoginManager, login_user, current_user, logout_user, log
 from flask_socketio import SocketIO, send, emit, join_room, leave_room, close_room
 import requests
 from PIL import Image
-
+from message import MessageType, send_message
  
 import json
 import uuid
@@ -126,15 +126,17 @@ def update_user(user_id):
 def delete_user(user_id):
     user = User.find(user_id)
     user.delete(user_id)
-    return ""
-
-
-
+    return ""    
 
 @socketio.on('message')
-def message(data):
-    send({'msg': data['msg'], 'username': data['username'], 'time_stamp': strftime('%b-%d %I:%M%p', localtime())}, room=data['room'])
+def send_text(data):
+    send_message(MessageType.TEXT, data['msg'], data['username'], data['room'])
 
+@socketio.on('send_gif')
+def send_gif(data):
+    uri = data['gif_url']
+    send_message(MessageType.IMAGE, uri, data['username'], data['room'])
+    
 @socketio.on('join')
 def join(data):
     if Room.private_check(data['room']):
@@ -193,36 +195,13 @@ def invite_user(data):
         for user in User.all():
             if user.name == data['invited_user']:
                 Invite.add_invite(data['room'], data['invited_user'])
-                genaka = user.room
                 send({'msg': "Invite sent!"})
-                send({'msg': data['username'] + " has invited you in the " + data['room'] + " room."}, room=genaka)
+                send({'msg': data['username'] + " has invited you in the " + data['room'] + " room."}, room=user.room)
                 check = True
         if not check:
             send({'msg': "User does not exist!"})
             raise ApplicationError("User doesn't exist", 404)
-
-@socketio.on('send_gif')
-def send_gif(image_data):
-    print(image_data['gif_url'])
-    uri = image_data['gif_url']
-    with open('./static/gifs/test_gif.gif', 'wb') as f:
-        f.write(requests.get(uri).content)
-    send({'msg': image_data['gif_url']}, room=current_user.room)
-    # try:
-    #     im.seek(1)
-    # except EOFError:
-    #     print('Warning: it is a single frame GIF.')
-    #     return im, 1
-    # return im, 2
-
-    # current_index = im.tell() + 1
-    # im.seek(current_index)
     
-
-# @socketio.on('image-upload')
-# def imageUpload(image):
-#     emit('send-image', image, broadcast = True)
-
 def update_found_user(username, room):
     for user in User.all():
         if user.name == username:

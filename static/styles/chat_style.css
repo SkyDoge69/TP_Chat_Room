@@ -110,7 +110,7 @@ input[type=text]:focus{
   100% {opacity: 1;}
 }
  
-.others-msg {
+.my-msg {
     margin-right:7em;
     margin-left: 1em;
     padding: 0.5em 0.5em 0.5em 1em;
@@ -120,7 +120,7 @@ input[type=text]:focus{
     border-style: solid;
 }
 
-.my-msg {
+.others-msg {
     margin-left:7em;
     margin-right:1em;
     padding: 0.5em 0.5em 0.5em 1em;
@@ -151,13 +151,13 @@ input[type=text]:focus{
     font-size:0.7em;
 }
 
-.other-username {
+.my-username {
     font-weight: bold;
     font-size: 1.1em;
     color: #206ED2;
 }
 
-.my-username {
+.other-username {
     font-weight: bold;
     font-size: 1.1em;
     color: rgb(90, 196, 173);

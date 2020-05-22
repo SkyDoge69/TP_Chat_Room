@@ -7,19 +7,22 @@ document.addEventListener('DOMContentLoaded', () => {
     joinRoom("Lounge");
     
     //maybe leter heterosexualen tp
-
+    
     socket.on('message', data => {
         const p = document.createElement('p');
         const span_username = document.createElement('span');
         const span_timestamp = document.createElement('span');
         const br = document.createElement('br');
+        let img = document.createElement("img");
         
         if (data.username == username) {
             p.setAttribute("class", "my-msg");
             span_username.setAttribute("class", "my-username");
+            img.setAttribute("class", "my-img");
         }  else if (typeof data.username !== 'undefined') {
             p.setAttribute("class", "others-msg");    
             span_username.setAttribute("class", "other-username");
+            img.setAttribute("class", "others-img");
         }
         else {
             printSysMsg(data.msg);
@@ -31,12 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
             p.innerHTML += span_username.outerHTML + br.outerHTML + data.msg + br.outerHTML + span_timestamp.outerHTML;
             document.querySelector('#display-message-section').append(p);
         } else if(data.type == "IMAGE") {
-            let img = document.createElement("img");
             img.src = data.msg;
-            //img.setAttribute("class", "my-img");
-            p.innerHTML += span_username.outerHTML + br.outerHTML + span_timestamp.outerHTML;
-            document.querySelector('#display-message-section').append(p);
+            //p.innerHTML += span_username.outerHTML + br.outerHTML + span_timestamp.outerHTML;
+            //document.querySelector('#display-message-section').append(p);
             document.querySelector('#display-message-section').append(img);
+            document.querySelector('#display-message-section').append(br);
         }
         scrollDownChatWindow();
     });

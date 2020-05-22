@@ -131,11 +131,25 @@ input[type=text]:focus{
 }
 
 .my-img {
-    float: right;
+    margin-left: 2em;
+    margin-bottom: 1em;
+    border-radius: 5px;
+    border-color:  grey;
+    border-width: 1px;
+    border-style: solid;
+    max-width: 15em;
+    max-height: 15em;
+}
+
+.others-img {
+    margin-left: 50em;
+    margin-bottom: 1em;
     border-radius: 5px;
     border-color: #206ED2;
     border-width: 1px;
     border-style: solid;
+    max-width: 15em;
+    max-height: 15em;
 }
 
 .system-msg {

@@ -68,7 +68,7 @@ class User(UserMixin):
         result = None
         with SQLite() as db:
             result = db.execute("UPDATE user SET room = ? WHERE name = ?",
-                    (room, name,))
+                    (room, name))
         if result.rowcount == 0:
             raise ApplicationError("No user present", 404)
  

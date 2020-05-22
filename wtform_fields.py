@@ -10,9 +10,9 @@ def invalid_credentials(form, field):
     
     user_object = User.find_by_name(username_entered)
     if user_object is None:
-        raise ValidationError("No user found!")
+        raise ValidationError("Wrong credentials")
     elif User.find_user_password(username_entered, password_entered) == False:
-        raise ValidationError("Wrong password!")
+        raise ValidationError("Wrong credentials")
 
 
 class LoginForm(FlaskForm):

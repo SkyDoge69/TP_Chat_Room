@@ -44,9 +44,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     //send
     document.querySelector('#send_message').onclick = () => {
-        if (document.querySelector('#user_message').value != "") { 
+        if (document.querySelector('#user_message').value != "" && 
+        document.querySelector('#user_message').value != "::love::") {  
             socket.send({'msg': document.querySelector('#user_message').value, 
             'username': username, 'room': room});
+            document.querySelector('#user_message').value = '';
+        }
+        if (document.querySelector('#user_message').value == "::love::") {
+            socket.emit('send_gif', 
+            {'gif_url': "https://media1.tenor.com/images/6d0ace5c4ae614d21854e9a455a089c3/tenor.gif?itemid=12933782", 'username': username, 'room': room});
             document.querySelector('#user_message').value = '';
         }
     }

@@ -43,11 +43,10 @@ def main():
         login_user(user_object)
         return redirect(url_for('chat'))
     return render_template("index.html", form=login_form)
- 
+
 @app.route("/chat", methods=['GET', 'POST'])
 def chat():
     return render_template("chat.html", username=current_user.name, rooms = Room.all_neznam(), private_rooms = Room.all_private())
-
 
 @app.route("/profiles/<username>", methods=['GET', 'POST'])
 def profile(username):
@@ -136,7 +135,8 @@ def send_text(data):
 def send_gif(data):
     uri = data['gif_url']
     send_message(MessageType.IMAGE, uri, data['username'], data['room'])
-    
+
+
 def notify_join_room(username, room_name, invite_check):
     if invite_check:
         join_room(room_name)
@@ -162,6 +162,7 @@ def leave(data):
     leave_room(data['room'])
     send({'msg': data['username'] + " has left the " + data['room'] + " room."}, room=data['room'])
 
+
 def notify_room_creation(username, room_name, is_private):
     if is_private == True:
         for current_room in Room.all_rooms():  
@@ -181,18 +182,37 @@ def create_room(data):
 def create_private_room(data): 
     notify_room_creation(data['username'], data['name'], True)
 
+
+def static_check(room_name):
+    if room_name == "Lounge" or room_name == "Narga" or room_name == "Clashka" or room_name == "Techno boom boom":
+        return True
+    return False
+
+def neznamkvopravi(room_name, username):
+    if room_name in Room.all_rooms() and Invite.check_for_invite(room_name, username):
+        for current_room in Room.all_rooms():  
+            send({'msg': username + " has deleted " +  room_name + " room. Refresh page."}, room=current_room)
+        Room.delete_room(room_name)
+        Invite.delete_invite(room_name)
+    else:
+        send({'msg': "Cannot delete this room"})
+
 @socketio.on('close_room')
 def close_room(data):
-    if data['name'] == "Lounge" or data['name'] == "Shisha" or data['name'] == "Games" or data['name'] == "Coding":
+    if static_check(data['name']):
         send({'msg': "Cannot delete static rooms!"}, room=data['room'])
     else:
-        if data['name'] in Room.all_rooms() and Invite.check_for_invite(data['name'], data['username']):
-            for current_room in Room.all_rooms():  
-                send({'msg': data['username'] + " has deleted " +  data['name'] + " room. Refresh page."}, room=current_room)
-            Room.delete_room(data['name'])
-            Invite.delete_invite(data['name'])
-        else:
-            send({'msg': "Cannot delete this room"})
+        neznamkvopravi(data['name'], data['username'])
+
+
+def search_and_invite(username, invited_user, room_name):
+    for user in User.all():
+        if user.name == invited_user:
+            Invite.add_invite(room_name, invited_user)
+            send({'msg': "Invite sent!"})
+            send({'msg': username + " has invited you in the " + room_name + " room."}, room=user.room)
+            return True
+    return False
 
 @socketio.on('invite_user')
 def invite_user(data):
@@ -201,13 +221,7 @@ def invite_user(data):
         raise ApplicationError("Can't invite yourself", 404)
     else:
         check = False
-        for user in User.all():
-            if user.name == data['invited_user']:
-                Invite.add_invite(data['room'], data['invited_user'])
-                send({'msg': "Invite sent!"})
-                send({'msg': data['username'] + " has invited you in the " + data['room'] + " room."}, room=user.room)
-                check = True
-        if not check:
+        if not search_and_invite(data['username'], data['invited_user'], data['room']):
             send({'msg': "User does not exist!"})
             raise ApplicationError("User doesn't exist", 404)
     

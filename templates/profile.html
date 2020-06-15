@@ -10,10 +10,10 @@
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="{{url_for('static', filename='scripts/socketio.js')}}"></script>
 </head>
 <body>
     
-
 <div class="container">
     <div class="span3 well">
         <center>
@@ -39,6 +39,12 @@
                     <center>
                     <p class="text-left" ><strong style="color:#66a1ee;">About me: </strong><br>
                     {{ user.description }} </p>
+                    <br>
+                    </center>
+                    <hr>
+                    <center>
+                    <p class="text-left" id="hunt"><strong style="color:#66a1ee;">Current room: </strong>
+                    {{ user.room }} </p>
                     <br>
                     </center>
                 </div>

@@ -35,8 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelector('#display-message-section').append(p);
         } else if(data.type == "IMAGE") {
             img.src = data.msg;
-            //p.innerHTML += span_username.outerHTML + br.outerHTML + span_timestamp.outerHTML;
-            //document.querySelector('#display-message-section').append(p);
             document.querySelector('#display-message-section').append(img);
             document.querySelector('#display-message-section').append(br);
         }
@@ -44,17 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     //send
     document.querySelector('#send_message').onclick = () => {
-        if (document.querySelector('#user_message').value != "" && 
-        document.querySelector('#user_message').value != "::love::") {  
-            socket.send({'msg': document.querySelector('#user_message').value, 
-            'username': username, 'room': room});
-            document.querySelector('#user_message').value = '';
-        }
-        if (document.querySelector('#user_message').value == "::love::") {
-            socket.emit('send_gif', 
-            {'gif_url': "https://media1.tenor.com/images/6d0ace5c4ae614d21854e9a455a089c3/tenor.gif?itemid=12933782", 'username': username, 'room': room});
-            document.querySelector('#user_message').value = '';
-        }
+        msgCheck(document.querySelector('#user_message').value);        
     }
 
     //create
@@ -92,6 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
         'username': username, 'room': room});
         document.querySelector('#invite_name').value = '';
     }
+
+  
     //gif
     document.getElementById("btnSearch").addEventListener("click", ev => {
         let APIKEY = "TtyDmfIxKqgeUJAmgzDpucrWJGH909ac";
@@ -142,20 +132,30 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector("#user_message").focus();
     }
 
-    function displayText(data, p) {
-        p.innerHTML += span_username.outerHTML + br.outerHTML + data.msg + br.outerHTML + span_timestamp.outerHTML;
-        document.querySelector('#display-message-section').append(p);
-    }
-
-    function displayImage(msg) {
-        let img = document.createElement("img");
-        img.src = content.data[0].images.downsized.url;
-        img.alt = content.data[0].title;
-        //var img_tag = `${ img.outerHTML }`;
-        socket.emit('send_gif', {'gif_url': img.src});
-        document.querySelector("#search").value = "";
-        document.querySelector('#display-message-section').append(img);
-    }
-          
+    function msgCheck(msg) {
+        if (msg != "" && msg != "::love::" && msg != "::scared::" && msg != "::pussy::" &&
+            msg != "::ugabuga::" && msg != "<3" && msg != "::depressed::") {
+                socket.send({'msg': msg, 
+                'username': username, 'room': room});
+                document.querySelector('#user_message').value = '';        
+        } 
+        if (msg == "::love::" || msg == "<3") {
+            socket.emit('send_gif', 
+            {'gif_url': "https://media1.tenor.com/images/6d0ace5c4ae614d21854e9a455a089c3/tenor.gif?itemid=12933782", 'username': username, 'room': room});
+            document.querySelector('#user_message').value = '';
+        } else if (msg == "::scared::") {
+            socket.emit('send_gif', 
+            {'gif_url': "https://media3.giphy.com/media/QZOZIBLbFDHoEHIBiT/giphy.gif", 'username': username, 'room': room});
+            document.querySelector('#user_message').value = '';
+        }  else if (msg == "::depressed::") {
+            socket.emit('send_gif', 
+            {'gif_url': "https://media1.tenor.com/images/8f9b17c96ec7065798309a74162625a6/tenor.gif?itemid=14007788", 'username': username, 'room': room});
+            document.querySelector('#user_message').value = '';
+        } else if (msg == "::ugabuga::") {
+            socket.emit('send_gif', 
+            {'gif_url': "https://media1.tenor.com/images/75686e0e110e3a1a7366e9750ee1004b/tenor.gif?itemid=13749557", 'username': username, 'room': room});
+            document.querySelector('#user_message').value = '';
+        }
+    }          
 })
 

@@ -50,13 +50,22 @@
                 </div>
                 <div class="modal-footer">
                     <center>
+                    <button type="button" onclick="myFunction()">Go to room</button>
                     <button type="button" class="btn btn-primary" data-dismiss="modal" >I've heard enough about {{ user.name }}</button>
                     </center>
                 </div>
             </div>
         </div>
     </div>
-</div>    </body>
+</div>    
+<script>
+    console.log('{{ user.room }}');
+    function myFunction() {
+        localStorage.roomName = '{{ user.room }}';
+        location.replace("http://127.0.0.1:5000/chat");    
+    }   
+</script>
+</body>
 
 
 </html>

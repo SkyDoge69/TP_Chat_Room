@@ -3,11 +3,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     
     const username = document.querySelector('#get-username').innerHTML;
-    let room = "Lounge";
-    joinRoom("Lounge");
     
-    //maybe leter heterosexualen tp
-    
+    let room = localStorage.roomName;
+    if ( !room ) {
+        room = "Lounge";
+    }
+    joinRoom(room);
     socket.on('message', data => {
         const p = document.createElement('p');
         const span_username = document.createElement('span');
@@ -40,12 +41,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         scrollDownChatWindow();
     });
-    //send
+
+
     document.querySelector('#send_message').onclick = () => {
         msgCheck(document.querySelector('#user_message').value);        
     }
 
-    //create
     document.querySelector('#create_room').onclick = () => {
         if (document.querySelector('#room_name').value != "") {
             socket.emit('create_room', {'name': document.querySelector('#room_name').value,
@@ -67,8 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-
-    //delete
     document.querySelector('#delete_room').onclick = () => {
         socket.emit('close_room', {'name': document.querySelector('#room_name').value,
         'username': username, 'room': room});
@@ -81,8 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#invite_name').value = '';
     }
 
-  
-    //gif
     document.getElementById("btnSearch").addEventListener("click", ev => {
         let APIKEY = "TtyDmfIxKqgeUJAmgzDpucrWJGH909ac";
         ev.preventDefault();
